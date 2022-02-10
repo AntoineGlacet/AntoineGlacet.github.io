@@ -9,8 +9,8 @@ tags:
   - project
   - tutorial
 header:
-  teaser: assets/images/antoine_portrait.jpg
-  image: assets/images/antoine_portrait.jpg
+  teaser: assets/images/shinsekai-night.jpg
+  image: assets/images/shinsekai-night.jpg
 ---
 
 
