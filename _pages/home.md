@@ -3,5 +3,6 @@ layout: home
 author_profile: true
 permalink: /
 header:
-  image: assets/images/osaka-night.jpg
+  overlay_image: assets/images/osaka-wide.jpg
+entries_layout: grid
 ---
