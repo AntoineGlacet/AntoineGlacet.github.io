@@ -1,5 +1,5 @@
 ---
-title: "Home server with Raspberry Pi"
+title: "test 0"
 categories:
   - Home server
 tags:
@@ -14,7 +14,6 @@ header:
 ---
 
 
----
 
 # h1 Heading 8-)
 ## h2 Heading

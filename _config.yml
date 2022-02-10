@@ -104,7 +104,7 @@ analytics:
 author:
   name             : "Antoine Glacet"
   avatar           : "assets/images/antoine-portrait-circle.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "test bio"
+  bio              : "I fell in the IT, DIY and open source rabbit hole and need to tell someone: so I made a blog"
   location         : "Osaka, Japan"
   email            :
   links:
