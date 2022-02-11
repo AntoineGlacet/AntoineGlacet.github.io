@@ -16,11 +16,11 @@ minimal_mistakes_skin    : "default" # "default", "air", "aqua", "contrast", "da
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Antoine's blog"
+title                    : "AntoineGlacet.com"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Antoine"
-description              : "This is a cool short sentence about this site"
+description              : "A blog about geeking as a hobby, a lifestyle and a way to reenchant corporate work."
 url                      : "https://AntoineGlacet.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "AntoineGlacet/AntoineGlacet.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
