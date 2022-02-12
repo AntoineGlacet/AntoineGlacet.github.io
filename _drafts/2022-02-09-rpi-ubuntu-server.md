@@ -10,7 +10,10 @@ tags:
   - tutorial
 header:
   teaser: assets/images/shinsekai-night.jpg
-excerpt: "This guide simply describe how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY."
+excerpt: "Tutorial to set up an ubuntu server on RPi. SSD mod included!"
+# classes: wide
+toc: true
+toc_sticky: true
 ---
 
 ![image-center](/{{page.header.teaser}}){: .align-center}
@@ -18,11 +21,12 @@ excerpt: "This guide simply describe how to set up a performant and reliable Ubu
 # Set up the perfect Raspberry Pi Ubuntu server
 
 
-Foreword: {{page.excerpt}}
+Foreword: This guide simply describe how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.
 {: .notice}
 
 ## Hardware
-Core:
+### List
+- Core:
 
 | Option | Description | Cost |
 | ------ | ----------- | ---- |
@@ -31,7 +35,7 @@ Core:
 | SD card                 | To store the raspberry pi OS, not used after first boot if you do SSD mode (you should).| 10-30$ |
 | A computer              | To setup the server. Any computer will do | out of budget |
 
-Optional (recommended for performance and reliability):
+- Optional (recommended for performance and reliability):
 
 | Option | Description | Cost |
 | ------ | ----------- |
@@ -46,5 +50,12 @@ affordability, tutorials and resources, wide applications (GPIO pins), open sour
 
 In fact, I started my home server on a Rpi4, thinking I might upgrade to something beefier someday... This was 2 years ago at the time of writing and this same Rpi still serves me daily!
 
+### Assembly
+
+### SSD mod
 
 ## Software
+
+### First boot
+
+### Boot from SSD
