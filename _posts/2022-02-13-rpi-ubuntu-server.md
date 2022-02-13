@@ -75,6 +75,9 @@ In fact, I started my home server on a Rpi4, thinking I might upgrade to somethi
 ```bash linux codeCopyEnabled
     sudo apt update
 ```
+
+test
+
 ### SSD mod
 
 ## Software
