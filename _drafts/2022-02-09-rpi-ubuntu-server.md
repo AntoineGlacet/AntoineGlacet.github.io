@@ -16,13 +16,15 @@ toc: true
 toc_sticky: true
 ---
 
-![image-center](/{{page.header.teaser}}){: .align-center}
+![image-center](/{{page.header.teaser}})
 
 # Set up the perfect Raspberry Pi Ubuntu server
 
+<div class="notice">
 
-Foreword: This guide simply describe how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, retro gaming station, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.
-{: .notice}
+**Foreword**: This guide simply describe how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, retro gaming station, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.
+
+</div>
 
 ## Hardware
 ### List
@@ -38,7 +40,7 @@ Foreword: This guide simply describe how to set up a performant and reliable Ubu
 - Optional (recommended for performance and reliability):
 
 | Option | Description | Cost |
-| ------ | ----------- |
+| ------ | ----------- | ---- |
 | HDD                  | to store large quantity of files and media  | 50-70$ |
 | SSD and USB adapter  | the SSD mode is really unleashing the full potential of Rpi as a server. see below  | 30-40$ |
 | powered USB hub      | To store the raspberry pi OS, not used after first boot if you do SSD mode (you should).| 15-20$ |
@@ -52,6 +54,27 @@ In fact, I started my home server on a Rpi4, thinking I might upgrade to somethi
 
 ### Assembly
 
+```md codeCopyEnabled
+    For example, this is a code block
+```  
+
+<div> </div>
+
+```md Markdown Example codeCopyEnabled
+    ```python codeCopyEnabled
+        for i in range(1,20):
+          a=i+2
+    ```
+```
+
+```python codeCopyEnabled
+    for i in range(1,20):
+      a=i+2
+```
+
+```bash linux codeCopyEnabled
+    sudo apt update
+```
 ### SSD mod
 
 ## Software
