@@ -38,7 +38,7 @@ In fact, I started my home server on a Rpi4, thinking I might upgrade to somethi
 
 | Option | Description | Cost |
 | ------ | ----------- | ---- |
-| Raspberry Pi            | Raspberry Pi 3 and 4 are fine depending on your budget.  | 35-75$ |
+| [Raspberry Pi](https://www.amazon.com/gp/product/B07TKFFCF1/ref=as_li_tl?ie=UTF8&tag=antoineglacet-20&camp=1789&creative=9325&linkCode=as2&creativeASIN=B07TKFFCF1&linkId=3727b43939cd326556c1309040702ea1)            | Raspberry Pi 3 and 4 are fine depending on your budget.  | 35-75$ |
 | Compatible power supply | Often sold with the Rpi. otherwise see recommendations.  | 0-10$ |
 | SD card                 | To store the Raspberry Pi OS, not used after first boot if you do SSD mode (you should).| 10-30$ |
 | A computer              | To setup the server. Any computer will do | out of budget |
@@ -48,7 +48,7 @@ In fact, I started my home server on a Rpi4, thinking I might upgrade to somethi
 | Option | Description | Cost |
 | ------ | ----------- | ---- |
 | HDD                  | to store large quantity of files and media  | 50-70$ |
-| SSD and USB adapter  | the SSD mode is really unleashing the full potential of Rpi as a server. [see below](#ssd-mod)  | 30-40$ |
+| [SSD](https://www.amazon.com/gp/product/B01N5IB20Q/ref=as_li_tl?ie=UTF8&tag=antoineglacet-20&camp=1789&creative=9325&linkCode=as2&creativeASIN=B01N5IB20Q&linkId=14dce372402111def65e1f1eb0eaa816) and [USB adapter](https://www.amazon.com/gp/product/B00XLAZODE/ref=as_li_tl?ie=UTF8&tag=antoineglacet-20&camp=1789&creative=9325&linkCode=as2&creativeASIN=B00XLAZODE&linkId=68ecacf469a4133fe84854670b3785c3)  | the SSD mode is really unleashing the full potential of Rpi as a server. [see below](#ssd-mod)  | 30-40$ |
 | powered USB hub      | required to supply extra power for SSD and HDD | 15-20$ |
 | case + fan           | At this point, a case and a fan can be useful too | 10-20$ | 
 
