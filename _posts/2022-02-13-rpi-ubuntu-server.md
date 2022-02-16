@@ -30,15 +30,15 @@ toc_sticky: true
 
 ### Why a Rpi
 
-You could run an ubuntu server from pretty much anyting, and actually if you have an (relatively) old laptop laying around, it could be a great idea. However, here are a few reasons why a Rpi is a great option:
+You could run an ubuntu server from pretty much anything, and actually if you have an (relatively) old laptop laying around, it could be a great idea. However, here are a few reasons why a Rpi is a great option:
 - affordability: relatively cheap
 - low power consumption, footprint & noise: as an always on device, it's a plus
-- large resource and tutorial: any issue you will face have been ansewered somewhere in the first few google search results 
-- GPIO pins: opens a wide range of applications (I used my Rpi to flash software in zigbee devices)
+- large resource and tutorial: any issue you will face have been answered somewhere in the first few google search results 
+- GPIO pins: opens a wide range of applications (I used my Rpi to flash software in Zigbee devices)
 - open source: embrace open source from the start!
 
 In fact, I started my home server on a Rpi4, thinking I might upgrade to something beefier someday... This was 2 years ago at the time of writing and this same Rpi still serves me daily!
-### List
+### Hardware list
 **Core:**
 
 | Option | Description | Cost |
@@ -77,6 +77,12 @@ compatibility recommended parts above, further link to chambers blog
 
 ### First boot
 
+#### Find out the Rpi ip address
+
+
+
+#### Connect with ssh
+
 let's connect to our instance with SSH. If you are using an older version of Windows, and did not join the cool kid gang using WSL, you will need an extra step here: to install Putty.
 
 It is a good moment to remind you that exploring the world of open source and general geeking will be a far more pleasant experience from a linux environment, and WSL is the painless way to access the full potential of linux from the comfort from Windows
@@ -107,3 +113,6 @@ ssh user@machine
 foo@bar:~$ whoami
 foo
 ```
+
+
+*sources: [Raspberry Pi official documentation](https://www.raspberrypi.com/documentation/computers/getting-started.html)*
