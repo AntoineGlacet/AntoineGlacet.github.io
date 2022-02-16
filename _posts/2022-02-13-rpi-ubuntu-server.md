@@ -30,7 +30,12 @@ toc_sticky: true
 
 ### Why a Rpi
 
-You could run an ubuntu server from pretty much anyting, and actually if you have an (relatively) old laptop laying around, it could be a great idea. However, here are a few reasons affordability, tutorials and resources, wide applications (GPIO pins), open source
+You could run an ubuntu server from pretty much anyting, and actually if you have an (relatively) old laptop laying around, it could be a great idea. However, here are a few reasons why a Rpi is a great option:
+- affordability: relatively cheap
+- low power consumption, footprint & noise: as an always on device, it's a plus
+- large resource and tutorial: any issue you will face have been ansewered somewhere in the first few google search results 
+- GPIO pins: opens a wide range of applications (I used my Rpi to flash software in zigbee devices)
+- open source: embrace open source from the start!
 
 In fact, I started my home server on a Rpi4, thinking I might upgrade to something beefier someday... This was 2 years ago at the time of writing and this same Rpi still serves me daily!
 ### List
@@ -63,7 +68,7 @@ Before buying a SD card or a SSD disk, read on to the [SSD mod](#ssd-mod) sectio
 ![image-center](/assets/raspberrypi-assembly.gif)
 
 ### SSD mod
-SD cards are not a good solution to run an OS from: they easily get corrupted and have a slower read and write speed compared to a SSD disk. I suggest to start with a SD card you have laying around somewhere (from a camera or an old phone maybe). It will allow you to test things out and you can do the SSD mod after, at which point your Raspberry Pi will boot directly from SSD and will not need this SD card.
+SD cards are not a good solution to run an OS from: they easily get corrupted and have a slower read and write speed compared to a SSD disk. I suggest to start with a SD card you have laying around somewhere (from a camera or an old phone maybe). It will allow you to test things out and you can do the SSD mod after, at which point your Raspberry Pi will boot directly from SSD and will not need this SD card anymore.
 
 little power-on trick
 compatibility recommended parts above, further link to chambers blog
