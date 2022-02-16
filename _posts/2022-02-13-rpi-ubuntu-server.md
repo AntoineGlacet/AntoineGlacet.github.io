@@ -4,12 +4,12 @@ categories:
   - Home server
 tags:
   - server
-  - linux
+  - Linux
   - media
   - project
   - tutorial
 header:
-  teaser: assets/images/shinsekai-night.jpg
+  teaser: assets/images/raspberrypi-ubuntu.jpg
 excerpt: "Tutorial to set up an ubuntu server on RPi. SSD mod included!"
 # classes: wide
 toc: true
@@ -20,7 +20,7 @@ toc_sticky: true
 
 # Set up the perfect Raspberry Pi Ubuntu server
 
-<div class="notice">
+<div class="notice--info">
 
 **Foreword**: This guide simply describe how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, retro gaming station, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.
 
@@ -65,7 +65,10 @@ Before buying a SD card or a SSD disk, read on to the [SSD mod](#ssd-mod) sectio
 
 ### Assembly
 
-![image-center](/assets/raspberrypi-assembly.gif)
+![image-center](/assets/images/raspberrypi-assembly.gif)
+
+1. just plug everything in
+2. really, there's not that much to it
 
 ### SSD mod
 SD cards are not a good solution to run an OS from: they easily get corrupted and have a slower read and write speed compared to a SSD disk. I suggest to start with a SD card you have laying around somewhere (from a camera or an old phone maybe). It will allow you to test things out and you can do the SSD mod after, at which point your Raspberry Pi will boot directly from SSD and will not need this SD card anymore.
@@ -75,44 +78,71 @@ compatibility recommended parts above, further link to chambers blog
 
 ## Software
 
+### Write the SD card
+
+![image-center](/assets/images/raspberrypi-SD-write.gif)
+
+Write the SD card with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (Windows, Linux and macOS).
+
+1. Connect the SD card to PC (through built-in/USB reader), and format it
+2. Open Raspberry Pi Imager and click "choose OS" => "other general purpose OS" => Ubuntu Server 20.04.3 LTS 64 bit
+3. Choose SD card (if SD card is not recognized)
+4. Click on advanced options and fill in the following options:
+    - hostname: raspberrypi
+    - enable SSH - use password authentification
+    - set username and password (write it down)
+    - configure wifi (input SSID and password)
+    - for good measure, set locale settings
+5. Click "write" and that's it!
+
 ### First boot
 
 #### Find out the Rpi ip address
 
+There are a lot of ways to find the ip from your Rpi. But let's review the 2 simplest ways:
+
+- connect to your router (you will need to access it anyway to set up a static adress and/or expose some ports once you start using your Rpi more)
+- use the following command:
+```sh Linux/macOS codeCopyEnabled
+arp -na | grep -i "b8:27:eb"
+# if first line do not work (for recent models of Rpi4)
+arp -na | grep -i "dc:a6:32" 
+```
+
+```powershell Windows codeCopyEnabled
+arp -a | findstr b8-27-eb
+# if first line do not work (for recent models of Rpi4)
+arp -a | findstr dc-a6-32  
+```
 
 
+Your Raspberry Pi ip might change after reboot because your router assign ip adresses dynamically by default on your home network. I recommend switching to static IP later. 
 #### Connect with ssh
 
 let's connect to our instance with SSH. If you are using an older version of Windows, and did not join the cool kid gang using WSL, you will need an extra step here: to install Putty.
 
-It is a good moment to remind you that exploring the world of open source and general geeking will be a far more pleasant experience from a linux environment, and WSL is the painless way to access the full potential of linux from the comfort from Windows
+It is a good moment to remind you that exploring the world of open source and general geeking will be a far more pleasant experience from a Linux environment, and WSL is the painless way to access the full potential of Linux from the comfort from Windows
 
-```sh linux codeCopyEnabled
-# eg.: ssh ubuntu@192.168.1.85
-ssh user@machine
+```sh Linux/macOS codeCopyEnabled
+# eg.: ssh rpi@192.168.1.85
+ssh user@ip
 ```
 
-```sh macOS codeCopyEnabled
-# eg.: ssh ubuntu@192.168.1.85
-ssh user@machine
+```powershell Windows>=10 codeCopyEnabled
+# eg.: ssh rpi@192.168.1.85
+ssh user@ip
 ```
 
-```powershell windows>=10 codeCopyEnabled
-# eg.: ssh ubuntu@192.168.1.85
-ssh user@machine
-```
-
-```md windows<10 codeCopyEnabled
+```md Windows<10 codeCopyEnabled
 # use Putty! :(
 ```
 
 
 ### Boot from SSD
 
-```console
-foo@bar:~$ whoami
-foo
-```
 
+<div class="notice--info">
 
-*sources: [Raspberry Pi official documentation](https://www.raspberrypi.com/documentation/computers/getting-started.html)*
+**tip:** should you have any trouble following this guide, have a look at the detailed [Raspberry Pi official documentation](https://www.raspberrypi.com/documentation/computers/getting-started.html) and the [ubuntu Rpi tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview).
+
+</div>
