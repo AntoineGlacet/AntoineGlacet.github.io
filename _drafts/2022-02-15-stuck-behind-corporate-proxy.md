@@ -29,3 +29,5 @@ trick to make a functin in .bashrc
 ### conda, apt, ubuntu, ...
 
 sudo -E for env variables (sudo is a different user)
+
+VS code git: does not use env variables => .gitconfig
