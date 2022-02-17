@@ -72,6 +72,12 @@ Before buying a SD card or a SSD disk, read on to the [SSD mod](#ssd-mod) sectio
 ### SSD mod
 SD cards are not a good solution to run an OS from: they easily get corrupted and have a slower read and write speed compared to a SSD disk. I suggest to start with a SD card you have laying around somewhere (from a camera or an old phone maybe). It will allow you to test things out and you can do the SSD mod after, at which point your Raspberry Pi will boot directly from SSD and will not need this SD card anymore.
 
+<div class="notice--danger">
+
+**Warning**: Compatibility can be tricky for SSD boot. If you go with the recommended links in the hardware list above, it will work fine. If you use other brands and models, please cheack compatibility against the list in this [post](https://jamesachambers.com/new-raspberry-pi-4-bootloader-usb-network-boot-guide/)
+
+</div>
+
 little power-on trick
 compatibility recommended parts above, further link to chambers blog
 
