@@ -64,7 +64,7 @@ Before buying a SD card or a SSD disk, read on to the [SSD mod](#ssd-mod) sectio
 
 ### Assembly
 
-![image-center](/assets/images/raspberrypi-assembly.gif)
+![image-center](/assets/images/raspberrypi-assembly.jpg)
 
 1. just plug everything in
 2. really, there's not that much to it
