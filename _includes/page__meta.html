@@ -27,5 +27,16 @@
         {% endif %}
       </span>
     {% endif %}
+
+
+    <!-- this part is to include a github edit link, we should improve the variable that enables it -->
+    {% if include.type != 'grid' %}
+      <span class="page__meta-sep"></span>
+      <span class="page__meta-readtime"></span>
+      {% assign github_edit_link = site.branch | append: page.path %}
+      <a href= {{github_edit_link}} ><span class="page__meta-readtime"><strong><i class="fab fa-fw fa-github" aria-hidden="true"></i> Suggest edits </strong></a>  </span>
+      </span>
+    {% endif %}
+
   </p>
 {% endif %}

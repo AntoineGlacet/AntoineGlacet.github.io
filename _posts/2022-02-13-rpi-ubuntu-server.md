@@ -17,7 +17,6 @@ toc_sticky: true
 ---
 
 ![image-center](/{{page.header.teaser}})
-
 # Set up the perfect Raspberry Pi Ubuntu server
 
 <div class="notice--info">
@@ -96,6 +95,15 @@ Write the SD card with [Raspberry Pi Imager](https://www.raspberrypi.com/softwar
 5. Click "write" and that's it!
 
 ### First boot
+
+For the first boot, do not plug anything else than the Rpi with its power supply and SD card. Eventually, you can plug an ethernet cable but if you have set up wifi at the previous step, it is unecessary.
+
+<div class="notice--danger">
+
+**Warning**: During your first boot a tool called [cloud-init](https://cloud-init.io/?_ga=2.64849775.1748684259.1645015163-866807930.1645015163) is doing configuration. Give it a few minutes before going trying to connect to your Rpi.
+
+</div>
+
 
 #### Find out the Rpi ip address
 

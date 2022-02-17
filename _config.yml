@@ -24,6 +24,7 @@ description              : "A blog about geeking as a hobby, a lifestyle and a w
 url                      : "https://www.antoineglacet.com" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "AntoineGlacet/AntoineGlacet.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+branch                   : "https://github.com/AntoineGlacet/AntoineGlacet.github.io/blob/develop/"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
