@@ -69,22 +69,29 @@ Before buying a SD card or a SSD disk, read on to the [SSD mod](#ssd-mod) sectio
 1. just plug everything in
 2. really, there's not that much to it
 
+For the first set up, keep the Pi close to your PC. Later on, I have found that putting it close to the router, connected through ethernet was most comfortable for me.
+
+For Raspberry Pi 4, you will need a fan to prevent CPU throttling (slowing down) during intensive use. You do not need that much air flow to keep your CPU cool, however fan can be a bit noisy. As my Rpi is close to my TV, I wanted it to be silent. What I did is I bought a 12V fan, that I hooked up to the 5V GPIO pins of my RPi4: the fan runs slower and is practically silent.
+
 ### SSD mod
 SD cards are not a good solution to run an OS from: they easily get corrupted and have a slower read and write speed compared to a SSD disk. I suggest to start with a SD card you have laying around somewhere (from a camera or an old phone maybe). It will allow you to test things out and you can do the SSD mod after, at which point your Raspberry Pi will boot directly from SSD and will not need this SD card anymore.
 
-little power-on trick
-compatibility recommended parts above, further link to chambers blog
+<div class="notice--danger">
+
+**Warning**: Compatibility can be tricky for SSD boot. If you go with the recommended links in the hardware list above, it will work fine. If you use other brands and models, please cheack compatibility against the list in this [post](https://jamesachambers.com/new-raspberry-pi-4-bootloader-usb-network-boot-guide/)
+
+</div>
 
 ## Software
 
-### Write the SD card
+### Write OS image to the SD card
 
 ![image-center](/assets/images/raspberrypi-SD-write.gif)
 
 Write the SD card with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (Windows, Linux and macOS).
 
 1. Connect the SD card to PC (through built-in/USB reader), and format it
-2. Open Raspberry Pi Imager and click "choose OS" => "other general purpose OS" => Ubuntu Server 20.04.3 LTS 64 bit
+2. Open Raspberry Pi Imager and click "choose OS" => "other general purpose OS" => Ubuntu Server 20.04.3 (or higher) LTS 64 bit
 3. Choose SD card (if SD card is not recognized)
 4. Click on advanced options and fill in the following options:
     - hostname: raspberrypi
@@ -144,13 +151,71 @@ ssh user@ip
 ```md Windows<10 codeCopyEnabled
 # use Putty! :(
 ```
+Now that we are logged in our server, the first thing to do is to update.
 
+```sh codeCopyEnabled
+sudo apt update
+sudo apt upgrade
+```
+And voila! You are ready to enjoy your fully functional server.
+
+If you want your Rpi to be much faster, keep reading!
 
 ### Boot from SSD
 
+#### Write OS image to SSD
+
+Repeat the steps of [Write OS image to the SD card](#write-os-image-to-the-sd-card) but write on your SSD instead of SD card
+
+#### Enable boot from USB mass storage
+
+##### For Raspberry Pi 4 & B+
+For most Raspberry 4 & B+, this is enabled by default so go ahead and try it: remove the SD card, plug in SSD and power up. If it succeeds, you are done, congrats!
+
+If it did not, you simply need to first boot from a SD card written with an image that enables USB mass storage boot. Simply use the RPi imager again. When selecting the OS do:
+
+Choose OS => Misc utility images => Bootloader => USB Boot
+
+Boot up once with this SD card, then shut down the Rpi and boot from SSD!
+##### For other Raspberry Pi
+For older Rpi (2B, 3A+, 3B), it is slightly more complicated: we will need to use Rasbian from a SD card to enable USB boot.
+
+- First, write raspbian to a SD card following the steps of [Write OS image to the SD card](#write-os-image-to-the-sd-card).
+
+- Boot from that image, ssh to your Rpi and execute the following command
+```sh codeCopyEnabled
+# update the packages
+sudo apt update
+sudo apt upgrade
+# enable boot from USB
+echo program_usb_boot_mode=1 | sudo tee -a /boot/config.txt
+# reboot
+sudo reboot
+```
+- wait for the Rpi to restart and do:
+```sh codeCopyEnabled
+vcgencmd otp_dump | grep 17
+```
+if output includes 3020000a, you won!
+- you remove SD card and boot from SSD
+
+
+<div class="notice--warning">
+
+**warning:** When booting up a Rpi which is connected to a powered USB hub, the Rpi can decide to draw power from USB. To avoid that, wait 2 or 3 seconds before plugging the USB hub after powering up the Rpi.
+
+Some USB adapter, although compatible can cause boot to take much longer. After boot everything will work fine. 
+
+If you cannot see your Rpi connect to your network  after booting from SSD, wait about 10 minutes before trying again. Also, the ip might have changed. In that case, refer to [Find out the Rpi ip address](#find-out-the-rpi-ip-address)
+
+</div>
+
+## Conclusion
+
+Here you are, you have a fully functional and performant Ubuntu server! In another post, I want to write about how I use mine to run some docker containers for media server and smart home hub!
 
 <div class="notice--info">
 
-**tip:** should you have any trouble following this guide, have a look at the detailed [Raspberry Pi official documentation](https://www.raspberrypi.com/documentation/computers/getting-started.html) and the [ubuntu Rpi tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview).
+**tip:** Should you have any trouble following this guide, have a look at the detailed [Raspberry Pi official documentation](https://www.raspberrypi.com/documentation/computers/getting-started.html) and the [ubuntu Rpi tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview).
 
 </div>
