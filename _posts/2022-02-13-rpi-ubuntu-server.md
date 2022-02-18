@@ -85,8 +85,11 @@ SD cards are not a good solution to run an OS from: they easily get corrupted an
 ## Software
 
 ### Write OS image to the SD card
+<div class=text-center>
 
 ![image-center](/assets/images/raspberrypi-SD-write.gif)
+
+</div>
 
 Write the SD card with [Raspberry Pi Imager](https://www.raspberrypi.com/software/) (Windows, Linux and macOS).
 
