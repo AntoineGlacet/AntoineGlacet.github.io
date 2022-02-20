@@ -1,9 +1,8 @@
 ---
 title: "Switching to Colemak"
 categories:
-  - productivity
-tags:
   - keyboard
+tags:
   - layout
 header:
   teaser: assets/images/colemak-improvement.jpg

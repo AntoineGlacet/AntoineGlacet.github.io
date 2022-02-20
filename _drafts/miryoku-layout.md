@@ -1,9 +1,8 @@
 ---
 title: "Compact keyboard layout"
 categories:
-  - productivity
-tags:
   - keyboard
+tags:
   - layout
 header:
   teaser: "https://raw.githubusercontent.com/manna-harbour/miryoku/master/data/cover/miryoku-kle-cover.png"
