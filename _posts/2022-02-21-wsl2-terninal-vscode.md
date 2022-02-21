@@ -23,7 +23,9 @@ toc_sticky: true
 
 </div>
 
-explain a bit what is what and what's the role of each part
+There is no way around it, linux is a must to be able to code and geek. The best coding environment on Windows is just to use linux on Windows, without all the hassle and complexity it used to be.
+
+The core of the environment is WSL - Windows Subsystem for Linux, which runs linux on Windows. To interact with WSL, Windows Terminal and VScode, respectively a terminal and an IDE (Integrated Development Environment) are both free, open source and integrate very well with WSL. Oh, and they are also top of the class in their respective category. I have yet to find something that these 3 softwares cannot achieve.
 
 <div class="notice--warning">
 
