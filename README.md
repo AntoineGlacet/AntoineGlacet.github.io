@@ -3,6 +3,8 @@ done with [Minimal Mistakes Jekyll theme](https://mmistakes.github.io/minimal-mi
 
 ** code at [develop branch](https://github.com/AntoineGlacet/AntoineGlacet.github.io/tree/develop) **
 
+source code is at `develop` branch and site build by jekyll is at `master` branch.
+
 ### To Do list
 
 - [ ] comments
