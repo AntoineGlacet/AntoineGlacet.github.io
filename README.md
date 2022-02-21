@@ -1,9 +1,7 @@
----
-permalink: /readme.md
----
-
 # Personnal blog
 done with [Minimal Mistakes Jekyll theme](https://mmistakes.github.io/minimal-mistakes/)
+
+** code at [develop branch](https://github.com/AntoineGlacet/AntoineGlacet.github.io/tree/develop) **
 
 ### To Do list
 
@@ -13,3 +11,4 @@ done with [Minimal Mistakes Jekyll theme](https://mmistakes.github.io/minimal-mi
 - [ ] more posts (home server media + smart home + keyboard)
 - [ ] dark theme
 - [ ] multi language
+
