@@ -9,7 +9,8 @@ tags:
 # header:
 #   teaser: "https://raw.githubusercontent.com/manna-harbour/miryoku/master/data/cover/miryoku-kle-cover.png"
 excerpt: ""
-# classes: wide
+toc: true
+toc_sticky: true
 ---
 
 ![image-center](/{{page.header.teaser}})
@@ -18,12 +19,7 @@ excerpt: ""
 
 Mounting a drive on ubuntu is a rather simple procedure but some important parameters are often forgotten on the tutorials I found online when I first configured my Raspberry Pi as a media server running on docker containers.
 
-A short tldr; of what follows:
-1. find UUID and file file system type of your drive
-2. edit /etc/fstab to mount automatically at boot
-3. check correct mount and ownership
-
-## find your drive details
+## 1. Find your drive details
 
 Many guides online are not really clear on this part so I will try to give the information I wished I had when I started.
 
@@ -33,17 +29,14 @@ In linux, a **disk** is a physical storage and it can have one or more **partiti
 
 </div>
 
-To get a good understanding of that, running the command `lsblk` with optional columns can help (`lsblk --help` get you a list of all available columns).
+To get a good understanding of that, running the command `lsblk` with optional columns can help (`lsblk --help` gets you a list of all available columns).
 
 ```sh command codeCopyEnabled
 lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,UUID,VENDOR,MODEL,LABEL
 ```
-<div>
-</div>
+<div></div>
 
-
-
-```sh result
+```sh result (scroll ==> to see details)
 NAME     SIZE TYPE FSTYPE   MOUNTPOINT        UUID                                 VENDOR   MODEL                LABEL
 loop0     49M loop squashfs /snap/core18/2252
 loop1     49M loop squashfs /snap/core18/2289
@@ -55,30 +48,69 @@ loop6   60.7M loop squashfs /snap/lxd/21843
 loop7   10.6M loop squashfs /snap/nmap/2534
 loop8   37.7M loop squashfs /snap/snapd/14982
 sda    223.6G disk                                                                 SABRENT  SSHD
-├─sda1   256M part vfat     /boot/firmware    4D3B-86C0                                                          system-boot
-└─sda2 223.3G part ext4     /                 79af43d1-801b-4c28-81d5-724c930bcc83                               writable
+├─sda1   256M part vfat     /boot/firmware    5C4B-68A0                                                          system-boot
+└─sda2 223.3G part ext4     /                 34fa43d2-724c-4b32-81d5-123c567abc12                               writable
 sdb      3.7T disk                                                                 StoreJet WDC_WD40NPZZ-00PDPT0
-└─sdb1   3.7T part ntfs     /mnt/data         28B67B48B67B1612                                                   Transcend_4TB
+└─sdb1   3.7T part ntfs     /mnt/data         12A34B56C78D9123                                                   Transcend_4TB
 ```
 You should be able to identify your drive easily and write down the FSTYPE and UUID. At this point your drive should not have a mountpoint.
 
-## configure mount at boot
+We will use UUID instead of NAME of the partition as the UUID will stay the same between boots or if you use a different usb port.
 
-Linux uses /etc/fstab (filesystem table) to 
+## 2. Configure mount at boot
 
+Linux uses /etc/fstab (file system table) to determine what and how partitions should be mounted at boot time. We will edit this file to configure our mount.
+
+```sh codeCopyEnabled
+sudo nano /etc/fstab
+```
+<div></div>
+
+add this line at the end of the file (change UUID, File System Type according to previous part).
 
 ```sh codeCopyEnabled
 # /etc/fstab
 # [Device] [Mount Point] [File System Type] [Options] [Dump] [Pass]
-UUID=12A34B56C78D9123 /mnt/data ntfs nosuid,uid=1000,gid=1000,nodev,nofail 0 0
+UUID=12A34B56C78D9123 /mnt/data ntfs uid=1000,gid=1000,nosuid,nodev,nofail 0 0
+```
+Then write out with `ctrl+o` and validate with `enter` and exit with `ctrl+x`.
+If you want more details about what we wrote up there, expand this next section.
+
+### 3.2 fstab and mount options
+
+<details>
+  <summary markdown="1"> Expand section </summary>
+
+  You can find info on the fields with `man fstab` and `man mount`, but here is a summary.
+
+  | item | value | Description |
+  | -------- | ---- | ----------- |
+  | [Device] | UUID= |  Universally Unique Identifier for the partition to be mounted |
+  | [Mount Point] | /mnt/data |  Where the partition will be accessible from in the linux file system tree |
+  | [File System Type] |  ntfs | The data structure of the partition we mount |
+  | [Options] | uid= | userid for the mount |
+  | [Options] | gid= | groupid for the mount |
+  | [Options] | nosuid | For security, prevents files on mount to set userid |
+  | [Options] | nodev | For security, prevents system from interpreting character or block special devices |
+  | [Options] | nofail | allows boot to continue if mount fails |
+  | [Dump] | 0 | set to 1 do dump filesystem |
+  | [Pass] | 0 | set to 1 if root filesystem |
+
+  The user and group parameters (uid and gid) are very important. When we want to manage access to this directory from docker containers or samba user later on so we will check that it works later on.
+
+</details>
+
+## 3. Mount and verify
+
+You can now enter `mount -a` in the terminal, it looks through /etc/fstab and mount all the devices as described there.
+Now that the mount is done, let's check it is there and ownership is set correctly.
+
+```sh command codeCopyEnabled
+cd /mnt
+ls -l
 ```
 
-
-
-UUID of the drive will not change
-
-
-
+Confirm that you see your userid and groupid for the mounted directory
 
 <div class="notice--info">
 
