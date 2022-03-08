@@ -47,6 +47,8 @@ WSL - Windows Subsystem for Linux, is a linux environment running natively on Wi
 It has never been that easy to install WSL! Just open a PowerShell prompt (in Windows Terminal!) and type the following.
 
 ```powershell PowerShell codeCopyEnabled
+# set default wsl version
+wsl --set-default-version 2
 # check which distro you can install
 wsl --list --online
 # install your favorite distro
