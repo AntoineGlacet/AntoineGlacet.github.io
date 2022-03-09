@@ -1,7 +1,7 @@
 ---
 title: "The perfect python environment"
 categories:
-  - tools
+  - productivity
 tags:
   - python
   - tutorial
