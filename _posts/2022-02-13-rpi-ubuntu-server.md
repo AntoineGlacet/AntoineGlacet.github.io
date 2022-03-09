@@ -3,13 +3,13 @@ title: "Home server with Raspberry Pi"
 categories:
   - home server
 tags:
-  - server
-  - linux
+  - raspberry pi
+  - linux server
+  - ubuntu
   - media
-  - project
   - tutorial
 header:
-  teaser: assets/images/raspberrypi-ubuntu.jpg
+  teaser: assets/images/rpi-ubuntu-ssd.png
 excerpt: "Tutorial to set up an ubuntu server on RPi. SSD mod included!"
 # classes: wide
 toc: true
@@ -21,7 +21,7 @@ toc_sticky: true
 
 <div class="notice--info">
  
-**Foreword**: This guide simply describe how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, retro gaming station, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.
+**Foreword**: This guide simply describes how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, retro gaming station, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.
 
 </div>
 

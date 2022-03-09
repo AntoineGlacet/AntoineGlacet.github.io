@@ -3,12 +3,14 @@ title: "mount a drive on Ubuntu"
 categories:
   - tips
 tags:
-  - linux
-  - server
+  - raspberry pi
+  - linux server
+  - ubuntu
+  - media
   - tutorial
-# header:
-#   teaser: "https://raw.githubusercontent.com/manna-harbour/miryoku/master/data/cover/miryoku-kle-cover.png"
-excerpt: ""
+header:
+  teaser: "assets/images/linux-mount-drive.png"
+excerpt: "The good way to mount a drive on a linux server. Perfect for Raspberry Pi ubuntu server."
 toc: true
 toc_sticky: true
 ---
