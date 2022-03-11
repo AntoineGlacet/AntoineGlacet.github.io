@@ -1,5 +1,5 @@
 ---
-title: "mount a drive on Ubuntu"
+title: "Mount a drive on Ubuntu"
 categories:
   - tips
 tags:

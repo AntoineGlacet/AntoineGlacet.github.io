@@ -63,16 +63,22 @@ docker-compose --file docker-compose.yml --env-file .env up -d
 
 <div class="notice--info">
  
-**Notice**: [environment variables](https://docs.docker.com/compose/environment-variables/), are variables that are passed to a container at start time. For variables that need to be kept consistent through all containers (like directory mapping) or that you want to keep secret (like passwords), you can store them in a `.env` file, which docker-compose will read at start time.
+**Notice**: [environment variables](https://docs.docker.com/compose/environment-variables/), are variables that are passed to a container at start time. For variables that need to be kept consistent through all containers (like directory mapping) or that you want to keep secret (like passwords), you may want to store them in a separate `.env` file. At start time, docker-compose will read the .env file and assign required environment variables.
 
 </div>
 
+## Media stack
 
-### plex
+In this blog post, we will only look at the media stack. You can refer to the [`docker-compose.yml`](https://github.com/AntoineGlacet/home-server/blob/master/media/docker-compose.yml) for the configuration. We will review briefly each container, but it is basically 6 images from [linuxserver.io](https://www.linuxserver.io/) with simple configuration, and a more complex [haugene/transmission](https://haugene.github.io/docker-transmission-openvpn/) image which I will explain below.
 
-```md codeCopyEnabled
+
+### Plex
+
+```yml codeCopyEnabled
+  # plex media server
   plex:
-    image: ghcr.io/linuxserver/plex
+    # https://hub.docker.com/r/linuxserver/plex
+    image: lscr.io/linuxserver/plex
     container_name: plex
     network_mode: host
     volumes:
@@ -84,15 +90,145 @@ docker-compose --file docker-compose.yml --env-file .env up -d
       - TZ=${TZ}
       - version=docker
     restart: unless-stopped
+```
+
+### Radaar
+
+```yml codeCopyEnabled
+  # movie library
+  radaar:
+    # https://hub.docker.com/r/linuxserver/radarr
+    image: lscr.io/linuxserver/radarr
+    container_name: radarr
+    hostname: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/radarr:/config
+      - ${DATA}:/data
+    ports:
+      - 7878:7878
+    depends_on:
+      - jackett
+      - transmission
+    restart: unless-stopped
 
 ```
 
-### radaar
+### Sonaar
 
-### sonaar
+```yml codeCopyEnabled
+  # TV show library
+  sonarr:
+    # https://hub.docker.com/r/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/sonarr:/config
+      - ${DATA}:/data
+    ports:
+      - 8989:8989
+    depends_on:
+      - jackett
+      - transmission
+    restart: unless-stopped
 
-### jackett
+```
 
-### openvpn-transmission
+### Jackett
 
-### bonus: calibre and calibre-web
+```yml codeCopyEnabled
+  # torrent tracker search
+  jackett:
+    # https://hub.docker.com/r/linuxserver/jackett
+    image: lscr.io/linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/jackett:/config
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+
+```
+
+### Calibre
+
+```yml codeCopyEnabled
+  # ebooks library manager and server (include webserver)
+  calibre:
+    # https://hub.docker.com/r/linuxserver/calibre
+    image: lscr.io/linuxserver/calibre:arm64v8-arch
+    container_name: calibre
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/calibre:/config
+      - ${DATA}:/data
+    ports:
+      - 8081:8081/tcp # Calibre webserver gui.
+      - 8080:8080/tcp # Calibre desktop gui.
+
+```
+### Transmission-openvpn
+
+Here is the tricky part of this stack. This container make sure that all your torrents are downloaded via a VPN. This is for privacy reasons, if you do not care about that, or do not want to subscribe to a paying VPN, you can use the much simpler [linuxserver image for transmission](https://hub.docker.com/r/linuxserver/transmission). Personally, I use a VPN to access geography-locked content and services so I was already a subscriber.
+
+I will not go much into detail here, but follow scrupulously the config values. Please have a look at the [`.env`](https://github.com/AntoineGlacet/home-server/blob/master/.env.example) example file for reference.
+
+```yml codeCopyEnabled
+  # torrent client
+  # special image bundled with VPN
+  transmission:
+    # https://haugene.github.io/docker-transmission-openvpn/
+    image: haugene/transmission-openvpn
+    container_name: transmission
+    volumes:
+      - ./config/transmission:/config
+      - ${DATA}:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      # VPN and networking https://haugene.github.io/docker-transmission-openvpn/provider-specific/
+      - CREATE_TUN_DEVICE=true
+      - OPENVPN_PROVIDER=NORDVPN
+      - NORDVPN_COUNTRY=${NORDVPN_COUNTRY}
+      - NORDVPN_CATEGORY=${NORDVPN_CATEGORY}
+      - NORDVPN_PROTOCOL=tcp
+      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - WEBPROXY_ENABLED=false
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
+      - DISABLE_PORT_UPDATER=true
+      # Transmission config
+      - TRANSMISSION_HOME=/config
+      - TRANSMISSION_DOWNLOAD_DIR=/data/downloads
+      - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
+      - TRANSMISSION_SEED_QUEUE_ENABLED=true
+      - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
+      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=30
+      - TRANSMISSION_WEB_UI=combustion
+    cap_add:
+      - NET_ADMIN
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+    ports:
+      - "9091:9091"
+    restart: unless-stopped
+```
