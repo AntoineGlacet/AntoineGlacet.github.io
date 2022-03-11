@@ -7,6 +7,7 @@ source code is at `develop` branch and site build by jekyll is at `master` branc
 
 ### To Do list
 
+- [ ] change to gem theme or gem dependencies
 - [ ] comments
 - [ ] email list
 - [ ] 404
