@@ -296,6 +296,7 @@ defaults:
       author_profile: true
       read_time: true
       comments: # true
+      commentsection: true
       share: true
       related: true
       show_date: true
@@ -303,3 +304,11 @@ defaults:
       header:
         teaser: assets/images/osaka-night.jpg
         # image: assets/images/osaka-night.jpg
+
+# jdvp comments google form
+comment-post: https://docs.google.com/forms/d/e/1FAIpQLSfrlz5piheu0ZRZd15k3l28qMZcDDp4b4krgVh13etL-q0d_g
+comment-read: https://docs.google.com/spreadsheets/d/1YZqZjA_kC2dWLJvUDCxjhJpMjKogIieMzf9SXvZmvvw
+comment-post-fields: [ entry.1614209693, entry.1964821455, entry.1424526143]
+google_forms_comments:
+  lazy_load_comments: true
+  comment_replies_enabled: true

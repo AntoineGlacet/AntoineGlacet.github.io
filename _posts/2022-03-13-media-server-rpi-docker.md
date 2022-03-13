@@ -15,6 +15,7 @@ excerpt: "How to set up a media server on Raspberry Pi with Docker (plex, radarr
 # classes: wide
 toc: true
 toc_sticky: true
+lazy_load_comments: false
 ---
 
 ![image-center](/{{page.header.teaser}})
