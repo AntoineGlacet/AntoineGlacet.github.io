@@ -67,7 +67,7 @@ $code-background-color-dark: $light-gray !default;
 $text-color: $dark-gray !default;
 $muted-text-color: mix(#fff, $text-color, 20%) !default;
 $border-color: $lighter-gray !default;
-$form-background-color: $lighter-gray !default;
+$form-background-color: #fff !default; // $lighter-gray as using jdvp commenting
 $footer-background-color: $lighter-gray !default;
 
 $primary-color: #6f777d !default;
