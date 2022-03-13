@@ -1,5 +1,5 @@
 ---
-title: "media server with Ubuntu"
+title: "media server with Rasperry Pi and Docker"
 categories:
   - home server
 tags:
@@ -74,13 +74,15 @@ In this blog post, we will only look at the media stack. You can refer to the [`
 
 ### Plex
 
+[Plex](https://www.plex.tv/) is the heart of the media system, his role is to stream media to your PC, phone, TV, etc... It is a free application and some minor services are available at a reasonable premium.
+
 ```yml codeCopyEnabled
   # plex media server
   plex:
     # https://hub.docker.com/r/linuxserver/plex
     image: lscr.io/linuxserver/plex
     container_name: plex
-    network_mode: host
+    network_mode: host # host mode => webUI is on port 32400
     volumes:
       - ./config/plex:/config
       - ${MEDIA}:/media
@@ -91,8 +93,28 @@ In this blog post, we will only look at the media stack. You can refer to the [`
       - version=docker
     restart: unless-stopped
 ```
+The important parameters here are first the volumes mapping and environment variables. It is important to keep it consistent across all the different applications of this stack. `/config` is where all the persistent configuration data will be stored and `/media` is where our media libraries are. `PUID` and `GUID` are determining the user and group for the container, it is important to keep the same value across all containers so that we do not create permission conflicts.
+
+``` shell
+# tree structure of /mnt
+/mnt
+└── data                       <- ${DATA}
+    │
+    ├── downloads              <- ${DOWNLOADS}
+    ├── media                  <- ${MEDIA}
+    │   ├── calibre-library
+    │   ├── movies
+    │   └── tv
+```
+Here is a image of the tree structure of `/mnt/data` drive where I store all my media. As some applications will need to hardlink, create and delete files across those folders, it is important to make sure that:
+
+- PUID/GUID can read and write on this directory and subdirectories.
+- all volumes are mapped as indicated in this page for each container.
+
+
 
 ### Radaar
+[Radarr](https://radarr.video/), will manage and download movie, with the help of jackett and transmission.
 
 ```yml codeCopyEnabled
   # movie library
@@ -101,23 +123,25 @@ In this blog post, we will only look at the media stack. You can refer to the [`
     image: lscr.io/linuxserver/radarr
     container_name: radarr
     hostname: radarr
+    volumes:
+      - ./config/radarr:/config
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/radarr:/config
-      - ${DATA}:/data
     ports:
-      - 7878:7878
+      - 7878:7878 # webUI at localhost:7878
     depends_on:
       - jackett
       - transmission
     restart: unless-stopped
-
 ```
+Here we indicate that radarr should be started only after jackett and transmission as it uses them. We also map the default port for the UI of radarr. 
+Notice that we map `/data` and not only `/media` or `/movies` as Radarr needs to see the download directory as well.   
 
 ### Sonaar
+[Sonarr](https://sonarr.tv/), does the same as Radarr but for TV shows and anime.
 
 ```yml codeCopyEnabled
   # TV show library
@@ -125,23 +149,25 @@ In this blog post, we will only look at the media stack. You can refer to the [`
     # https://hub.docker.com/r/linuxserver/sonarr
     image: lscr.io/linuxserver/sonarr
     container_name: sonarr
+    volumes:
+      - ./config/sonarr:/config
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/sonarr:/config
-      - ${DATA}:/data
     ports:
-      - 8989:8989
+      - 8989:8989 # webUI at localhost:8989
     depends_on:
       - jackett
       - transmission
     restart: unless-stopped
 
 ```
+Basically the same configuration as Radarr.
 
 ### Jackett
+[Jackett](https://github.com/Jackett/Jackett), translate queries from radarr and sonarr to torrent trackers to use in transmission.
 
 ```yml codeCopyEnabled
   # torrent tracker search
@@ -149,20 +175,22 @@ In this blog post, we will only look at the media stack. You can refer to the [`
     # https://hub.docker.com/r/linuxserver/jackett
     image: lscr.io/linuxserver/jackett
     container_name: jackett
+    volumes:
+      - ./config/jackett:/config
+      - ${DOWNLOADS}:/downloads
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/jackett:/config
-      - ${DOWNLOADS}:/downloads
     ports:
-      - 9117:9117
+      - 9117:9117 # webUI at localhost:9117
     restart: unless-stopped
 
 ```
+Nothing new under the sun.
 
 ### Calibre
+[Calibre](https://calibre-ebook.com/) is the reference for e-book and comics management.
 
 ```yml codeCopyEnabled
   # ebooks library manager and server (include webserver)
@@ -171,18 +199,20 @@ In this blog post, we will only look at the media stack. You can refer to the [`
     image: lscr.io/linuxserver/calibre:arm64v8-arch
     container_name: calibre
     restart: unless-stopped
+    volumes:
+      - ./config/calibre:/config
+      - ${DATA}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    volumes:
-      - ./config/calibre:/config
-      - ${DATA}:/data
     ports:
       - 8081:8081/tcp # Calibre webserver gui.
       - 8080:8080/tcp # Calibre desktop gui.
-
 ```
+Once again, quite similar as before. Raspberry Pi needs an arm64 version for the containers, it is usually automatically fetched but I had to specify the architecture tag for this container.
+
+
 ### Transmission-openvpn
 
 Here is the tricky part of this stack. This container make sure that all your torrents are downloaded via a VPN. This is for privacy reasons, if you do not care about that, or do not want to subscribe to a paying VPN, you can use the much simpler [linuxserver image for transmission](https://hub.docker.com/r/linuxserver/transmission). Personally, I use a VPN to access geography-locked content and services so I was already a subscriber.
@@ -232,3 +262,9 @@ I will not go much into detail here, but follow scrupulously the config values. 
       - "9091:9091"
     restart: unless-stopped
 ```
+
+## Access
+
+You can access all the WebUI from you local network from the ports listed in the `docker-compose.yml` and configure the apps from there. (eg. your-server-ip:9091 for transmission webUI) I may make another post for all the configuration tips and tricks for this stack and the best practices for managing libraries.
+
+Another interesting feature is remote access to your media server from outside your LAN. You can use reverse proxy and expose some ports to the internet to directly access your media server, but I chose to use VPN as my router has built-int open-vpn server (I have an Asus rt-ac68u).
