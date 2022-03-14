@@ -1,3 +1,29 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@AntoineGlacet 
+jdvp
+/
+jekyll-comments-google-forms
+Public
+Code
+Issues
+Pull requests
+Actions
+Security
+Insights
+jekyll-comments-google-forms/comment-section.html
+@jdvp
+jdvp No Ticket : Add the comment replies feature
+Latest commit 1a1c7c6 on Jan 30
+ History
+ 1 contributor
+969 lines (857 sloc)  27.5 KB
+   
 {%- comment -%} 
 	This section is to determine whether or not chunked comment loading is enabled.
 	By default this is turned ON. If the page has enabled or disabled this feature explicitly,
@@ -112,7 +138,6 @@
     	- jquery for DOM manipulation
     	- jquery-csv for parsing Google Sheets CSV data to JSON
     	- validator for escaping user-entered comments to prevent malicious code input in comments
-
     	Make sure to update these to the latest versions every once in a while. */
     {%- endcomment -%}
 
@@ -620,7 +645,7 @@
 	HTML for displaying the actual comment section.
 	It has a state for oth when the article has comments and when it does not. -->
 {%- endcomment -%}
-<h4 class="page__comments-title">Comments</h4>
+<h4 class="post-subtitle">Comments</h4>
 <div id="load-comments" class="comments">
 	<button id="load-comment-button" class="comment-button" onclick="initialCommentLoad()">Load Comments</button>
 </div>
@@ -631,11 +656,12 @@
 		<div id="no-comments" class="comment-info-text">
 			<p>There are currently no comments on this article, be the first to add one below</p>
 		</div>
+		<div id="comment-container"></div>
 	</div>
-	<h4 class="page__comments-title">Add a Comment</h4>
+	<h4 class="post-subtitle">Add a Comment</h4>
 	<div class="comments">
 		<div class="comment-info-text">
-			<!-- <p>Note that I may remove comments for any reason, so try to be civil. If you are looking for a response to your comment, either leave your email address or check back on this page periodically.</p> -->
+			<p>Note that I may remove comments for any reason, so try to be civil. If you are looking for a response to your comment, either leave your email address or check back on this page periodically.</p>
 			{%- if site.google_forms_comments.google_app_script -%}
 			<p id="comment-submit-error"></p>
 			{%- endif -%}
@@ -793,8 +819,8 @@
 .comment-button {
 	border: 0;
 	border-radius: 8px;
-	background: #656ccc;
-	color: #ffffff;
+	background: #9ccc65;
+	color: #fff;
 	font-family: "Source Sans Pro", sans-serif;
 	font-weight: bold;
 	font-size: 0.9em;
@@ -966,3 +992,16 @@ https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-b
 {%- endif -%}
 </style>
 {%- endif -%}
+© 2022 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Loading complete
