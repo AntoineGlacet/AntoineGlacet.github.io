@@ -17,6 +17,8 @@ toc_sticky: true
 Foreword: Explain in a few words why it is important to start with a good environment.
 {: .notice}
 
+test sentence
+
 ## Python environment
 ### Miniconda
 ### Jupyter notebook and other tools
