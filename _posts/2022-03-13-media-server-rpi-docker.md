@@ -196,9 +196,10 @@ Nothing new under the sun.
   # ebooks library manager and server (include webserver)
   calibre:
     # https://hub.docker.com/r/linuxserver/calibre
-    image: lscr.io/linuxserver/calibre:arm64v8-arch
+    # for some reason, putting lscr.io before image
+    # generates an error later...
+    image: linuxserver/calibre:arm64v8-arch
     container_name: calibre
-    restart: unless-stopped
     volumes:
       - ./config/calibre:/config
       - ${DATA}:/data
@@ -207,8 +208,9 @@ Nothing new under the sun.
       - PGID=${PGID}
       - TZ=${TZ}
     ports:
-      - 8081:8081/tcp # Calibre webserver gui.
       - 8080:8080/tcp # Calibre desktop gui.
+      - 8081:8081/tcp # Calibre webserver gui.
+    restart: unless-stopped
 ```
 Once again, quite similar as before. Raspberry Pi needs an arm64 version for the containers, it is usually automatically fetched but I had to specify the architecture tag for this container.
 
