@@ -101,7 +101,6 @@ social:
 analytics:
   provider               : "custom" # false (default), "google", "google-universal", "google-gtag", "custom"
   # google:into Secondary Side Bar
-For a better experience, drag and drop this view into the Secondary Side Bar.
   #   tracking_id          :
   #   anonymize_ip         : # true, false (default)
 
