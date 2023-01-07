@@ -20,7 +20,7 @@ title                    : "Blog"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "Antoine Glacet"
-description              : "A blog about geeking"
+description              : "A blog about geeking and reference in case I forget stuff"
 url                      : "https://blog.antoineglacet.com" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "AntoineGlacet/AntoineGlacet.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
