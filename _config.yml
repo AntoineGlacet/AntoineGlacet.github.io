@@ -100,7 +100,8 @@ social:
 # Analytics
 analytics:
   provider               : "custom" # false (default), "google", "google-universal", "google-gtag", "custom"
-  # google:
+  # google:into Secondary Side Bar
+For a better experience, drag and drop this view into the Secondary Side Bar.
   #   tracking_id          :
   #   anonymize_ip         : # true, false (default)
 
@@ -109,7 +110,7 @@ analytics:
 author:
   name             : "Antoine Glacet"
   avatar           : "assets/images/antoine-portrait-circle.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I fell in the IT, DIY and open source rabbit hole and need to tell someone: so I made a blog"
+  bio              : "Geek at heart with focus on self hosting and keyboards"
   location         : "Osaka, Japan"
   email            :
   home             : "/about"
