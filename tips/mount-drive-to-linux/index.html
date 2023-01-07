@@ -1,0 +1,1375 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Mount a drive on Ubuntu - Blog</title>
+<meta name="description" content="The good way to mount a drive on a linux server. Perfect for Raspberry Pi ubuntu server.">
+
+
+  <meta name="author" content="Antoine Glacet">
+  
+  <meta property="article:author" content="Antoine Glacet">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Blog">
+<meta property="og:title" content="Mount a drive on Ubuntu">
+<meta property="og:url" content="https://blog.antoineglacet.com/tips/mount-drive-to-linux/">
+
+
+  <meta property="og:description" content="The good way to mount a drive on a linux server. Perfect for Raspberry Pi ubuntu server.">
+
+
+
+  <meta property="og:image" content="https://blog.antoineglacet.com/assets/images/linux-mount-drive.png">
+
+
+
+  <meta name="twitter:site" content="@antoineglacet">
+  <meta name="twitter:title" content="Mount a drive on Ubuntu">
+  <meta name="twitter:description" content="The good way to mount a drive on a linux server. Perfect for Raspberry Pi ubuntu server.">
+  <meta name="twitter:url" content="https://blog.antoineglacet.com/tips/mount-drive-to-linux/">
+
+  
+    <meta name="twitter:card" content="summary">
+    
+      <meta name="twitter:image" content="https://blog.antoineglacet.com/assets/images/linux-mount-drive.png">
+    
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2022-02-27T00:00:00+09:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.antoineglacet.com/tips/mount-drive-to-linux/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Antoine Glacet",
+      "url": "https://blog.antoineglacet.com/",
+      "sameAs": ["https://www.linkedin.com/in/antoineglacet/","https://github.com/AntoineGlacet","https://twitter.com/antoineglacet"]
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Blog Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<link rel="icon" href="/favicon.ico" sizes="any"><!-- 32×32 -->
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"><!-- 180×180 -->
+<link rel="manifest" href="/manifest.webmanifest">
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Blog
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about">About</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="https://blog.antoineglacet.com/about">
+        <img src="/assets/images/antoine-portrait-circle.png" alt="Antoine Glacet" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="https://blog.antoineglacet.com/about" itemprop="url">Antoine Glacet</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+<p>Geek at heart with focus on self hosting and keyboards</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name" class="p-locality">Osaka, Japan</span>
+        </li>
+      
+
+      
+        
+          
+        
+          
+        
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/antoineglacet/" rel="nofollow noopener noreferrer me"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/AntoineGlacet" rel="nofollow noopener noreferrer me"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+  
+  </div>
+
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Mount a drive on Ubuntu">
+    <meta itemprop="description" content="The good way to mount a drive on a linux server. Perfect for Raspberry Pi ubuntu server.">
+    <meta itemprop="datePublished" content="2022-02-27T00:00:00+09:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="https://blog.antoineglacet.com/tips/mount-drive-to-linux/" class="u-url" itemprop="url"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+Mount a drive on Ubuntu
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2022-02-27T00:00:00+09:00">February 27, 2022</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          4 minute read
+        
+      </span>
+    
+
+
+    <!-- this part is to include a github edit link, we should improve the variable that enables it -->
+    
+      <span class="page__meta-sep"></span>
+      <span class="page__meta-readtime"></span>
+      
+      <a href= https://github.com/AntoineGlacet/AntoineGlacet.github.io/blob/develop/_posts/2022-02-27-mount-drive-to-linux.md ><span class="page__meta-readtime"><strong><i class="fab fa-fw fa-github" aria-hidden="true"></i> Suggest edits </strong></a>  </span>
+      </span>
+    
+
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu"><li><a href="#mount-a-drive-on-ubuntu">Mount a drive on Ubuntu</a><ul><li><a href="#find-your-drive-details">1. Find your drive details</a></li><li><a href="#configure-mount-at-boot">2. Configure mount at boot</a><ul><li><a href="#fstab-and-mount-options">3.2 fstab and mount options</a></li></ul></li><li><a href="#mount-and-verify">3. Mount and verify</a></li></ul></li></ul>
+
+            </nav>
+          </aside>
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+<p><img src="/assets/images/linux-mount-drive.png" alt="image-center" /></p>
+<h1 id="mount-a-drive-on-ubuntu">Mount a drive on Ubuntu</h1>
+<p>Mounting a drive on ubuntu is a rather simple procedure but some important parameters are often forgotten on the tutorials I found online when I first configured my Raspberry Pi as a media server running on docker containers.</p>
+<h2 id="find-your-drive-details">1. Find your drive details</h2>
+<p>Many guides online are not really clear on this part so I will try to give the information I wished I had when I started.</p>
+<div class="notice--info">
+<p>In linux, a <strong>disk</strong> is a physical storage and it can have one or more <strong>partitions</strong>, each formated with its own <strong>filesystem</strong> (eg. ext4, ntfs, vfat, …). In linux, every <strong>file</strong> and <strong>directory</strong> is under the root directory <code>/</code>. Partitions are mounted on directories, usually we mount external storage under <code>/mnt</code>.</p>
+</div>
+<p>To get a good understanding of that, running the command <code>lsblk</code> with optional columns can help (<code>lsblk --help</code> gets you a list of all available columns).</p>
+<ul class="code-tab-container 7756716b-88ac-4783-a7af-19f663e6f996"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', '7756716b-88ac-4783-a7af-19f663e6f996', 0)">command</a></li></ul><ul class="code-tab-switcher 7756716b-88ac-4783-a7af-19f663e6f996"><li class="code_switcher_container_parent active-tab code_switcher_sh b8c749b1-46f1-4615-8c07-ae93fd13bfaa"><div class="code_switcher_code_action_container"><div id="code_copied_snackbar">Copied!</div><button class="code_switcher_copy_button" title="Copy" onclick="copyText('b8c749b1-46f1-4615-8c07-ae93fd13bfaa')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lsblk <span class="nt">-o</span> NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,UUID,VENDOR,MODEL,LABEL
+</code></pre></div></div>
+</li></ul>
+<div></div>
+<ul class="code-tab-container 8d02a26a-a18f-4f83-8e2e-6d70329ffa40"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', '8d02a26a-a18f-4f83-8e2e-6d70329ffa40', 0)">result (scroll ==> to see details)</a></li></ul><ul class="code-tab-switcher 8d02a26a-a18f-4f83-8e2e-6d70329ffa40"><li class="code_switcher_container_parent active-tab code_switcher_sh c4040c75-bf23-4aad-b0c0-8ad4e67c519e"><div class="code_switcher_code_action_container"><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NAME     SIZE TYPE FSTYPE   MOUNTPOINT        UUID                                 VENDOR   MODEL                LABEL
+loop0     49M loop squashfs /snap/core18/2252
+loop1     49M loop squashfs /snap/core18/2289
+loop2   57.5M loop squashfs /snap/core20/1274
+loop3   57.5M loop squashfs /snap/core20/1332
+loop4   60.7M loop squashfs /snap/lxd/21804
+loop5   10.6M loop squashfs /snap/nmap/2504
+loop6   60.7M loop squashfs /snap/lxd/21843
+loop7   10.6M loop squashfs /snap/nmap/2534
+loop8   37.7M loop squashfs /snap/snapd/14982
+sda    223.6G disk                                                                 SABRENT  SSHD
+├─sda1   256M part vfat     /boot/firmware    5C4B-68A0                                                          system-boot
+└─sda2 223.3G part ext4     /                 34fa43d2-724c-4b32-81d5-123c567abc12                               writable
+sdb      3.7T disk                                                                 StoreJet WDC_WD40NPZZ-00PDPT0
+└─sdb1   3.7T part ntfs     /mnt/data         12A34B56C78D9123                                                   Transcend_4TB
+</code></pre></div></div>
+</li></ul>
+<p>You should be able to identify your drive easily and write down the FSTYPE and UUID. At this point your drive should not have a mountpoint.</p>
+<p>We will use UUID instead of NAME of the partition as the UUID will stay the same between boots or if you use a different usb port.</p>
+<h2 id="configure-mount-at-boot">2. Configure mount at boot</h2>
+<p>Linux uses /etc/fstab (file system table) to determine what and how partitions should be mounted at boot time. We will edit this file to configure our mount.</p>
+<div class="code_switcher_container_parent 4ceb0406-822c-41b4-a1d5-2af92a559cba"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('4ceb0406-822c-41b4-a1d5-2af92a559cba')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/fstab
+</code></pre></div></div>
+</div>
+<div></div>
+<p>add this line at the end of the file (change UUID, File System Type according to previous part).</p>
+<div class="code_switcher_container_parent 2802eda3-2712-4c42-9176-db4c9bdefcd3"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('2802eda3-2712-4c42-9176-db4c9bdefcd3')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># /etc/fstab</span>
+<span class="c"># [Device] [Mount Point] [File System Type] [Options] [Dump] [Pass]</span>
+<span class="nv">UUID</span><span class="o">=</span>12A34B56C78D9123 /mnt/data ntfs <span class="nv">uid</span><span class="o">=</span>1000,gid<span class="o">=</span>1000,nosuid,nodev,nofail 0 0
+</code></pre></div></div>
+</div>
+<p>Then write out with <code>ctrl+o</code> and validate with <code>enter</code> and exit with <code>ctrl+x</code>.
+If you want more details about what we wrote up there, expand this next section.</p>
+<h3 id="fstab-and-mount-options">3.2 fstab and mount options</h3>
+<details>
+  <summary markdown="1"> Expand section </summary>
+<p>You can find info on the fields with <code>man fstab</code> and <code>man mount</code>, but here is a summary.</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[Device]</td>
+<td>UUID=</td>
+<td>Universally Unique Identifier for the partition to be mounted</td>
+</tr>
+<tr>
+<td>[Mount Point]</td>
+<td>/mnt/data</td>
+<td>Where the partition will be accessible from in the linux file system tree</td>
+</tr>
+<tr>
+<td>[File System Type]</td>
+<td>ntfs</td>
+<td>The data structure of the partition we mount</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>uid=</td>
+<td>userid for the mount</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>gid=</td>
+<td>groupid for the mount</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>nosuid</td>
+<td>For security, prevents files on mount to set userid</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>nodev</td>
+<td>For security, prevents system from interpreting character or block special devices</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>nofail</td>
+<td>allows boot to continue if mount fails</td>
+</tr>
+<tr>
+<td>[Dump]</td>
+<td>0</td>
+<td>set to 1 do dump filesystem</td>
+</tr>
+<tr>
+<td>[Pass]</td>
+<td>0</td>
+<td>set to 1 if root filesystem</td>
+</tr>
+</tbody>
+</table>
+<p>The user and group parameters (uid and gid) are very important. When we want to manage access to this directory from docker containers or samba user later on so we will check that it works later on.</p>
+</details>
+<h2 id="mount-and-verify">3. Mount and verify</h2>
+<p>You can now enter <code>mount -a</code> in the terminal, it looks through /etc/fstab and mount all the devices as described there.
+Now that the mount is done, let’s check it is there and ownership is set correctly.</p>
+<ul class="code-tab-container bbdee65b-427c-4888-ae84-21dbd275f088"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', 'bbdee65b-427c-4888-ae84-21dbd275f088', 0)">command</a></li></ul><ul class="code-tab-switcher bbdee65b-427c-4888-ae84-21dbd275f088"><li class="code_switcher_container_parent active-tab code_switcher_sh 776daf69-6089-48c3-9d5a-7749a9d92e82"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('776daf69-6089-48c3-9d5a-7749a9d92e82')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /mnt
+<span class="nb">ls</span> <span class="nt">-l</span>
+</code></pre></div></div>
+</li></ul>
+<p>Confirm that you see your userid and groupid for the mounted directory</p>
+<div class="notice--info">
+<p><strong>tip:</strong> Should you have any trouble following this guide, have a look at the detailed <a href="https://man7.org/linux/man-pages/man8/mount.8.html">linux manual section on mount</a>, also accessible from terminal with command <code>man mount</code>.</p>
+</div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#linux-server" class="page__taxonomy-item p-category" rel="tag">linux server</a><span class="sep">, </span>
+    
+      <a href="/tags/#media" class="page__taxonomy-item p-category" rel="tag">media</a><span class="sep">, </span>
+    
+      <a href="/tags/#raspberry-pi" class="page__taxonomy-item p-category" rel="tag">raspberry pi</a><span class="sep">, </span>
+    
+      <a href="/tags/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a><span class="sep">, </span>
+    
+      <a href="/tags/#ubuntu" class="page__taxonomy-item p-category" rel="tag">ubuntu</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tips" class="page__taxonomy-item p-category" rel="tag">tips</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2022-02-27T00:00:00+09:00">February 27, 2022</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  <p>
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?via=antoineglacet&text=Mount+a+drive+on+Ubuntu%20https%3A%2F%2Fblog.antoineglacet.com%2Ftips%2Fmount-drive-to-linux%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.antoineglacet.com%2Ftips%2Fmount-drive-to-linux%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.antoineglacet.com%2Ftips%2Fmount-drive-to-linux%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+
+  <a href="https://www.reddit.com/submit?url=https%3A%2F%2Fblog.antoineglacet.com%2Ftips%2Fmount-drive-to-linux%2F&title=Mount a drive on Ubuntu" class="btn btn--reddit" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i><span> Reddit</span></a>
+  </p>
+</section>
+
+      <script>function setText(elementId, textContent) {
+		document.getElementById(elementId).textContent = textContent;
+	};
+
+	function show(elementId) {
+		document.getElementById(elementId).style.display = 'inline';
+	};
+
+	function hide(elementId) {
+		document.getElementById(elementId).style.display = 'none';
+	};
+
+	function getValue(elementId) {
+		return document.getElementById(elementId).value;
+	};
+
+	function setValue(elementId, value) {
+		return document.getElementById(elementId).value = value;
+	};
+
+	function fadeIn(element) {
+		var duration = 400;
+		element.style.opacity = 0;
+		let opacity = 0;
+		const timer = setInterval(function() {
+		  opacity += 50 / duration;
+		  if (opacity >= 1) {
+		    clearInterval(timer);
+		    opacity = 1;
+		  }
+		  element.style.opacity = opacity;
+		}, 50);
+	};
+
+
+	function disableButtonWithLoader(elementId) {
+		var buttonToDisable = document.getElementById(elementId);
+		if (buttonToDisable == null) {
+			return;
+		}
+		buttonToDisable.disabled = true;
+		setText(elementId, "\xa0");
+	}
+
+	function disablePostCommentButton() {
+		disableButtonWithLoader("comment-submit");
+	};
+
+	function enablePostCommentButton() {
+		var postCommentButton = document.getElementById("comment-submit");
+		postCommentButton.disabled = false;
+		setText("comment-submit", "Post");
+	};async function initialCommentLoad() {
+		disableButtonWithLoader("load-comment-button");var loadJquery = document.createElement("script");
+		loadJquery.type = "text/javascript";
+		loadJquery.src = "https://code.jquery.com/jquery-3.6.0.min.js";
+		document.head.appendChild(loadJquery);var loadValidator = document.createElement("script");
+		loadValidator.src = "https://cdnjs.cloudflare.com/ajax/libs/validator/13.5.2/validator.min.js";
+		document.head.appendChild(loadValidator);await loadValidator.onload;loadJquery.onload = function() {async function checkJQuery() {
+				if (typeof jQuery === "undefined") {
+					return false;
+				} else {
+					clearTimeout(interval);var loadJqueryCsv = document.createElement("script");
+					loadJqueryCsv.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.11/jquery.csv.min.js";
+					document.head.appendChild(loadJqueryCsv);await loadJqueryCsv.onload;reloadComments();
+				}
+			};var interval = setInterval(checkJQuery, 250);
+		};};
+
+	var thisPageUrl = "/tips/mount-drive-to-linux/";
+	const EXTRA_INFO_START = "chunkedCommentInfoStart";
+	const EXTRA_INFO_END = "chunkedCommentInfoEnd";var visibleComments = [];
+	var hiddenComments = [];
+	var netNewComments = [];var commentIds = new Set();function formatDate(stringDate) {
+		var date = new Date(stringDate);
+		var dateOptions = { year: 'numeric', month: 'long', day: 'numeric'};
+		var timeOptions = { hour: 'numeric', minute: 'numeric' };
+		return `${date.toLocaleDateString("en-us", dateOptions)} at ${date.toLocaleTimeString("en-us", timeOptions)}`;
+	};async function displayComments(comments) {
+		show("comments-and-input");
+		hide("load-comments");
+		var hasVisibleComments = visibleComments.length > 0;if (comments == null || comments === "" || comments == []) {
+			if (!hasVisibleComments) {
+				show("no-comments");
+				hide("load-more-comments");
+				hide("num-comments-displayed");
+			}
+			return;
+		}commentIds = new Set();comments = `timestamp,name,comment,isAuthor\n${comments}`;
+		var newHiddenComments = $.csv.toObjects(comments).map(item => {
+				commentIds.add(Date.parse(item.timestamp)?.toString());
+				return item;
+			}).sort((a, b) => (new Date(a.timestamp).getTime() || 0) - (new Date(b.timestamp).getTime() || 0))
+			.map(item => JSON.stringify(item));if (hasVisibleComments) {
+			netNewComments = newHiddenComments
+				.filter(item => !visibleComments.includes(item))
+				.filter(item => !hiddenComments.includes(item));
+		}
+
+		hiddenComments = newHiddenComments
+			.filter(item => !visibleComments.includes(item))
+			.filter(item => !netNewComments.includes(item));
+
+		loadMoreComments(false || !hasVisibleComments);
+	};function loadMoreComments(isLoadMoreAction) {var newCommentsToDisplay = hiddenComments.slice(-5);if (isLoadMoreAction) {newCommentsToDisplay.reverse().forEach(element => displaySingleComment(element, true));
+			hiddenComments = hiddenComments.filter(item => !newCommentsToDisplay.includes(item) && !visibleComments.includes(item));
+		} else {netNewComments.forEach(element => displaySingleComment(element, false));
+			netNewComments = []
+		}
+
+		setText("num-comments-displayed", `Showing ${visibleComments.length} of ${visibleComments.length + hiddenComments.length} comments`);
+
+		if (hiddenComments.length == 0) {
+			hide("load-more-comments");
+		} else {
+			show("load-more-comments");
+		}
+	};var currentFadeItem = null;
+
+	function fadeColor(element) {
+		if (currentFadeItem != null) {
+			clearInterval(currentFadeItem);
+			currentFadeItem = null;
+		}
+
+		var duration = 1000;
+		var step = 25;
+		let opacity = 1;
+		const timer = setInterval(function() {
+		  opacity -= (1 / (duration / step));
+		  if (opacity <= 0) {
+		    clearInterval(timer);
+		    currentFadeItem = null;
+		    opacity = 0;
+		  }
+		  element.style.background = "rgba(3, 155, 229, "+ opacity +")";
+		}, step);
+		currentFadeItem = timer;
+	};
+
+	function smoothScrollTo(element) {
+		element.scrollIntoView({
+		  behavior: "smooth",
+		  block: "start",
+		  inline: "nearest"
+		});
+	};
+
+	function jumpToComment(commentId) {
+		var element = document.getElementsByClassName("" + commentId)[0];
+		while(element == null && hiddenComments.length > 0) {
+			loadMoreComments(true);
+			element = document.getElementsByClassName("" + commentId)[0];
+		}
+		if (element != null) {
+			smoothScrollTo(element);
+			fadeColor(element);
+		}
+	};
+
+	function clearCommentReplyItem() {
+		document.getElementById("comment-reply-info").innerHTML = ``;
+	};
+
+	function replyToComment(commentId) {
+		document.getElementById("comment-reply-info").innerHTML = `<small class="comment-reply-clear" onclick="clearCommentReplyItem()">Ⓧ&nbsp;&nbsp;&nbsp;</small><small onClick="jumpToComment('${commentId}')">Replying to comment <a id="reply-to-comment-id">${commentId}</a></small>`;
+		smoothScrollTo(document.getElementsByClassName("comments-form")[0]);
+	};function getCommentInfo(comment) {
+		var extraCommentInfo = comment?.match(EXTRA_INFO_START + ".+" + EXTRA_INFO_END);
+		return {
+			text : comment?.replace(extraCommentInfo, ""),
+			extraCommentInfo : JSON.parse(extraCommentInfo?.toString()?.replace(EXTRA_INFO_START, "")?.replace(EXTRA_INFO_END, "") ?? "{}")
+		};
+	};
+
+	function displaySingleComment(element, isPrepend) {if (visibleComments.includes(element)) {
+			return;
+		}
+
+		var jsonElement = JSON.parse(element);
+		var comment = getCommentInfo(jsonElement.comment);var verifiedAuthorTag = "";
+		if (jsonElement.isAuthor == true || jsonElement.isAuthor === "TRUE") {
+			verifiedAuthorTag = "&nbsp;<strong>(Author)</strong>";
+		}var newItem = document.createElement("div");
+		newItem.classList.add("comment-item");newItem.classList.add("reply-item");
+		var commentReplyId = "" + Date.parse(jsonElement.timestamp);
+		newItem.classList.add(commentReplyId);
+		var replyToHtml = null;
+		var replyId = comment?.extraCommentInfo?.replyToCommentId;
+		if (replyId != null && replyId != "" && commentIds.has(replyId)) {
+			replyToHtml = `<p class="comemnt-reply-id" onclick="jumpToComment('${replyId}')"><<< ${replyId}</p>`;
+		}
+		var currentCommentReplyButton = `<span class="comment-reply-button" onclick="replyToComment(${commentReplyId})"><img />Reply</span>`;newItem.innerHTML = `
+			<p class="commenter-name">${validator.escape(jsonElement.name.toString())}${verifiedAuthorTag}
+				<small>${formatDate(jsonElement.timestamp)}${currentCommentReplyButton ?? ""}</small>
+			</p>
+			<div>${replyToHtml ?? ""}<p>${validator.escape(comment?.text?.toString()).replace(new RegExp('\r?\n','g'), '<br />')}</p>
+			</div>
+		`.trim();
+		if (isPrepend) {
+			document.getElementById("comment-container").prepend(newItem);
+		} else {
+			document.getElementById("comment-container").append(newItem);
+		}
+		fadeIn(newItem);
+		visibleComments.push(element);hide("no-comments");
+		show("num-comments-displayed");
+	};function reloadComments() {var sqlStatement = encodeURIComponent(`SELECT A, C, D, E WHERE B = '${thisPageUrl}'`);
+		fetch(`https://docs.google.com/spreadsheets/d/1YZqZjA_kC2dWLJvUDCxjhJpMjKogIieMzf9SXvZmvvw/gviz/tq?tqx=out:csv&sheet=comments&tq=${sqlStatement}&headers=0`)
+		.then(response => response.text())
+		.then(response => displayComments(response));
+	};const encodeFormData = (data) => {
+	    return Object.keys(data)
+	        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+	        .join('&');
+	};function getCommentContent() {
+		var comment = getValue("comment-comment")?.toString();
+
+		var extraCommentInfo = {};var replyToCommentId = document?.getElementById("reply-to-comment-id")?.text;
+		if (replyToCommentId != null && replyToCommentId != "") {
+			extraCommentInfo.replyToCommentId = replyToCommentId;
+		}if (Object.keys(extraCommentInfo).length !== 0) {
+			comment = EXTRA_INFO_START + JSON.stringify(extraCommentInfo) + EXTRA_INFO_END + comment;
+		}
+
+		return comment;
+	};function postComment(recaptchaToken) {
+		disablePostCommentButton();
+		var username = getValue("comment-name");
+		var comment = getCommentContent();
+
+		fetch(`https://docs.google.com/forms/d/e/1FAIpQLSfrlz5piheu0ZRZd15k3l28qMZcDDp4b4krgVh13etL-q0d_g/formResponse`, {
+		  method: 'POST',
+		  mode: 'no-cors',
+		  headers: {
+		    "Content-Type": "application/x-www-form-urlencoded"
+		  },
+		  body: encodeFormData({
+		  	"entry.1614209693" : thisPageUrl?.toString(),
+		  	"entry.1964821455" : username?.toString(),
+		  	"entry.1424526143" : comment?.toString()
+		  })
+		}).then(response => {
+			setValue("comment-name", '');
+			setValue("comment-comment", '');clearCommentReplyItem();reloadComments();
+		})
+		.catch(error => {console.log(error);})
+		.finally(() => { enablePostCommentButton(); });
+
+		return false;
+	};</script><h4 class="post-subtitle">Comments</h4>
+<div id="load-comments" class="comments">
+	<button id="load-comment-button" class="comment-button" onclick="initialCommentLoad()">Load Comments</button>
+</div>
+<div id="comments-and-input">
+	<div id="comment-section" class="comments">
+		<p id="num-comments-displayed"></p>
+		<button id="load-more-comments" class="comment-button" onclick="loadMoreComments(true)" type="button">Load Older Comments</button>
+		<div id="no-comments" class="comment-info-text">
+			<p>There are currently no comments on this article, be the first to add one below</p>
+		</div>
+		<div id="comment-container"></div>
+	</div>
+	<h4 class="post-subtitle">Add a Comment</h4>
+	<div class="comments">
+		<div class="comment-info-text">
+			<p> </p></div>	
+		<div class="comments-form"><form onsubmit="return postComment()" id="comment-form" autocomplete="off"><ul>
+					<li>
+						<input id="comment-name" name="username" type="text" placeholder="Name" required="" value=""><p id="comment-reply-info"></p></li>
+					<li><textarea id="comment-comment" name="comment" placeholder="Comment" required=""></textarea></li>
+					<li><button id="comment-submit" type="submit" class="comment-button">Post</button></li>
+				</ul><p>
+			</form>
+		</div>
+	</div>
+</div><style>
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro");
+.comment-item {
+	position: relative;
+	padding: 0.5em 2.5em;
+	background: white;
+	font-family: "Source Sans Pro", sans-serif;
+	width: 95%;
+	margin: 1em auto;
+	box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.comment-item:after {
+	content: "";
+	position: relative;
+	display: block;
+	clear: both;
+}
+
+.comment-item p {
+	line-height: 1.6;
+}
+
+.comment-item small {
+	padding-left: 0.7em;
+	color: #999;
+	font-size: 0.8em;
+}
+
+.commenter-name {
+	color: #367588;
+	text-decoration: none;
+	font-size: 1em;
+	font-weight: 700;
+}
+
+.commenter-name strong {
+	color: #e91e63;
+	text-decoration: none;
+	font-size: 1em;
+	font-weight: 700;
+}.comment-reply-button {
+	float: right;
+	cursor: pointer;
+}
+
+.comment-reply-button img {
+	display: inline;
+	vertical-align: middle;
+	width: 1.2em;
+	height: 1.2em;
+	margin: 0;
+	content:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%23999999'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z'/%3E%3C/svg%3E");
+}
+
+.comment-reply-button:hover {
+	color: #e91e63;
+}
+
+.comment-reply-button:hover img {
+	content:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%23e91e63'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z'/%3E%3C/svg%3E");
+}
+
+.comemnt-reply-id {
+	color: #e91e63;
+	font-size: .9em;
+	cursor: pointer;
+}
+
+#comment-reply-info {
+	float: right;
+	font-size: .9em;
+	color: #e91e63;
+	cursor: pointer;
+}
+
+#comment-reply-info small {
+	vertical-align: middle;
+}
+
+.comment-reply-clear {
+	color: #e91e63;
+	font-size: 1.1em;
+	cursor: pointer;
+}#comment-reply-info p {
+	margin: 0;
+}
+
+.comments-form {
+	margin-left: 1em;
+	margin-right: 1em;
+	width: 95%;
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+.comments-form ul {
+	list-style: none;
+	margin-left: -40px;
+}
+
+.comments-form ul li {
+	margin-bottom: 15px;
+}
+
+.comments {
+	align-items: center;
+	border-top: 0.5px solid #e5e5e5;
+	padding-top: 1rem;
+	position: relative;
+}
+
+.comment-button {
+	border: 0;
+	border-radius: 8px;
+	background: #8065cc;
+	color: #fff;
+	font-family: "Source Sans Pro", sans-serif;
+	font-weight: bold;
+	font-size: 0.9em;
+	text-transform: uppercase;
+	margin-bottom: 20px;
+	outline-style: none;
+	padding: 10px 20px;
+	width: auto;
+	min-width: 25%;
+}
+
+#comment-submit {
+	width: auto;
+	min-width: 25%;
+	position: relative;
+}
+
+.comment-button:disabled::after,
+.comment-button[disabled]::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border: 4px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    -webkit-animation: button-loading-spinner 1s ease infinite;
+    animation: button-loading-spinner 1s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@-webkit-keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+#load-more-comments {
+	width: auto;
+}
+
+#load-more-comments,
+#num-comments-displayed {
+	display: none;
+}
+
+#comment-name,
+#comment-comment {
+	width: 50%;
+	padding: 10px;
+	border: 0;
+	border-radius: 8px;
+	background: #f7f7f7;
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-name::-webkit-input-placeholder,
+#comment-comment::-webkit-input-placeholder {
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-name::-moz-placeholder,
+#comment-comment::-moz-placeholder {
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-name:-ms-input-placeholder,
+#comment-comment:-ms-input-placeholder {
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-name::-ms-input-placeholder,
+#comment-comment::-ms-input-placeholder {
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-name::placeholder,
+#comment-comment::placeholder {
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-name:focus,
+#comment-comment:focus {
+	background: #fff;
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+#comment-comment {
+	width: 100%;
+	height: 80px;
+	resize: vertical;
+	min-height: 80px;
+}.comment-info-text {
+	letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.comment-info-text p {
+	margin: 0 0 1rem;
+	text-align: justify;
+    text-align-last: center;
+    font-size: .9em;
+}
+
+#comment-container {
+	width: 100%;
+}
+
+#comment-section, #load-comments {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}#comments-and-input {
+	display: none;
+}</style>
+
+      
+  <nav class="pagination">
+    
+      <a href="/productivity/wsl2-terninal-vscode/" class="pagination--pager" title="
+WSL2+Windows Terminal+VScode
+">Previous</a>
+    
+    
+      <a href="/home%20server/media-server-rpi-docker/" class="pagination--pager" title="
+media server with Rasperry Pi and Docker
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h2 class="page__related-title">You may also enjoy</h2>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/media-server.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/home%20server/media-server-rpi-docker/" rel="permalink"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+media server with Rasperry Pi and Docker
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2022-03-13T00:00:00+09:00">March 13, 2022</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          8 minute read
+        
+      </span>
+    
+
+
+    <!-- this part is to include a github edit link, we should improve the variable that enables it -->
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+How to set up a media server on Raspberry Pi with Docker (plex, radarr, sonarr, haugene/transmission-openvpn, calibre)
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/wsl-terminal-vscode.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/productivity/wsl2-terninal-vscode/" rel="permalink"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+WSL2+Windows Terminal+VScode
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2022-02-21T00:00:00+09:00">February 21, 2022</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          6 minute read
+        
+      </span>
+    
+
+
+    <!-- this part is to include a github edit link, we should improve the variable that enables it -->
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+Ultimate coding and geeking environment on Windows
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/rpi-ubuntu-ssd.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/home%20server/rpi-ubuntu-server/" rel="permalink"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+Home server with Raspberry Pi
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2022-02-13T00:00:00+09:00">February 13, 2022</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          10 minute read
+        
+      </span>
+    
+
+
+    <!-- this part is to include a github edit link, we should improve the variable that enables it -->
+    
+
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+Tutorial to set up an ubuntu server on RPi. SSD mod included!
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+          <li><a href="https://github.com/AntoineGlacet" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Antoine Glacet. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+  <!-- start custom analytics snippet -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BB1MTBWCLJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BB1MTBWCLJ');
+</script>
+<!-- end custom analytics snippet -->
+
+
+
+
+
+
+
+
+  </body>
+</html>

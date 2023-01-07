@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://blog.antoineglacet.com/home%20server/rpi-ubuntu-server/</loc>
+<lastmod>2022-02-13T00:00:00+09:00</lastmod>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/productivity/wsl2-terninal-vscode/</loc>
+<lastmod>2022-02-21T00:00:00+09:00</lastmod>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/tips/mount-drive-to-linux/</loc>
+<lastmod>2022-02-27T00:00:00+09:00</lastmod>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/home%20server/media-server-rpi-docker/</loc>
+<lastmod>2022-03-13T00:00:00+09:00</lastmod>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/about</loc>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/categories/</loc>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/</loc>
+</url>
+<url>
+<loc>https://blog.antoineglacet.com/tags/</loc>
+</url>
+</urlset>

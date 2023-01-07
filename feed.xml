@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.2">Jekyll</generator><link href="https://blog.antoineglacet.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.antoineglacet.com/" rel="alternate" type="text/html" /><updated>2023-01-07T21:22:15+09:00</updated><id>https://blog.antoineglacet.com/feed.xml</id><title type="html">Blog</title><subtitle>A blog about geeking and reference in case I forget stuff</subtitle><author><name>Antoine Glacet</name></author><entry><title type="html">media server with Rasperry Pi and Docker</title><link href="https://blog.antoineglacet.com/home%20server/media-server-rpi-docker/" rel="alternate" type="text/html" title="media server with Rasperry Pi and Docker" /><published>2022-03-13T00:00:00+09:00</published><updated>2022-03-13T00:00:00+09:00</updated><id>https://blog.antoineglacet.com/home%20server/media-server-rpi-docker</id><content type="html" xml:base="https://blog.antoineglacet.com/home%20server/media-server-rpi-docker/"><![CDATA[<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+<p><img src="/assets/images/media-server.png" alt="image-center" /></p>
+<h1 id="ubuntu-docker-media-server">Ubuntu Docker media server</h1>
+<div class="notice--info" markdown="1">
+<p><strong>Foreword</strong>: This guide simply describes the media server stack I use on my <a href="/home%20server/rpi-ubuntu-server/">Raspberry Pi server running on Ubuntu</a>. You can refer directly to my <a href="https://github.com/AntoineGlacet/home-server">Github repo</a> where all my home server config is stored, including home automation and network tool stacks. A good way to try out is to clone this repo, edit the .env.example file and start docker-compose with <code>docker-compose --file /path-to-docker-compose.yml --env-file /path-to-.env up -d</code>.</p>
+</div>
+<h2 id="why-docker">Why Docker</h2>
+<p>I use Docker to run all the applications of my home servers inside containers. I actually used to just install the applications directly but I chose to migrate to Docker for a few reasons:</p>
+<ul>
+<li><strong>Keep my system clean:</strong>
+Everything from my services and apps are under my <code>home server</code> folder and not spread all over.</li>
+<li><strong>Easy management:</strong>
+I can easily install, delete and update all my applications. I could also migrate really easily to another hardware, or a docker-swarm if needed.</li>
+<li><strong>Learn about Docker:</strong>
+Containerisation and docker is really convenient to share and run code and apps on other people’s PC or the cloud, super useful skill to pick up.</li>
+</ul>
+<p>In terms of performance, there is no difference between running this home server containerised or bare-metal and it saves a lot of time and headaches figuring out compatibilities issues.</p>
+<h2 id="system-diagram">System diagram</h2>
+<p><img src="/assets/images/media-diag.png" alt="image-center" /></p>
+<h2 id="configuration">Configuration</h2>
+<div class="notice--info">
+<p><strong>Prerequisite</strong>: <a href="/home%20server/rpi-ubuntu-server/">linux server</a> with a <a href="/tips/mount-drive-to-linux/">mounted drive</a>
+for data storage, docker and docker-compose.</p>
+</div>
+<p>If you look at my <a href="https://github.com/AntoineGlacet/home-server">Home server repo</a>, you will notice:</p>
+<ul>
+<li>3 stacks (home automation / media / tools), divided across 3 directories for clarity</li>
+<li>each container config files are stored in a consistent way, under the stack directory (./config/container-name)</li>
+<li>a single .env file with environment variables on the root directory to ensure consistency</li>
+</ul>
+<p>The only drawback of this organization is we need to tell docker-compose where are the <code>docker-compose.yml</code> and <code>.env</code> files.
+Luckily, it is quite easy with the following command.</p>
+<div class="code_switcher_container_parent 3e89d7a2-7b88-44d1-8cb2-0f31e9351ee4"><div class="code_switcher_code_action_container"><div id="code_copied_snackbar">Copied!</div><button class="code_switcher_copy_button" title="Copy" onclick="copyText('3e89d7a2-7b88-44d1-8cb2-0f31e9351ee4')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-compose <span class="nt">--file</span> docker-compose.yml <span class="nt">--env-file</span> .env up <span class="nt">-d</span>
+</code></pre></div></div>
+</div>
+<div class="notice--info">
+<p><strong>Notice</strong>: <a href="https://docs.docker.com/compose/environment-variables/">environment variables</a>, are variables that are passed to a container at start time. For variables that need to be kept consistent through all containers (like directory mapping) or that you want to keep secret (like passwords), you may want to store them in a separate <code>.env</code> file. At start time, docker-compose will read the .env file and assign required environment variables.</p>
+</div>
+<h2 id="media-stack">Media stack</h2>
+<p>In this blog post, we will only look at the media stack. You can refer to the <a href="https://github.com/AntoineGlacet/home-server/blob/master/media/docker-compose.yml"><code>docker-compose.yml</code></a> for the configuration. We will review briefly each container, but it is basically 6 images from <a href="https://www.linuxserver.io/">linuxserver.io</a> with simple configuration, and a more complex <a href="https://haugene.github.io/docker-transmission-openvpn/">haugene/transmission</a> image which I will explain below.</p>
+<h3 id="plex">Plex</h3>
+<p><a href="https://www.plex.tv/">Plex</a> is the heart of the media system, his role is to stream media to your PC, phone, TV, etc… It is a free application and some minor services are available at a reasonable premium.</p>
+<div class="code_switcher_container_parent a3287e02-a06a-4396-a4c1-b41beb791dc9"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('a3287e02-a06a-4396-a4c1-b41beb791dc9')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># plex media server</span>
+  <span class="na">plex</span><span class="pi">:</span>
+    <span class="c1"># https://hub.docker.com/r/linuxserver/plex</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">lscr.io/linuxserver/plex</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">plex</span>
+    <span class="na">network_mode</span><span class="pi">:</span> <span class="s">host</span> <span class="c1"># host mode =&gt; webUI is on port 32400</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/plex:/config</span>
+      <span class="pi">-</span> <span class="s">${MEDIA}:/media</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">PUID=${PUID}</span>
+      <span class="pi">-</span> <span class="s">PGID=${PGID}</span>
+      <span class="pi">-</span> <span class="s">TZ=${TZ}</span>
+      <span class="pi">-</span> <span class="s">version=docker</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+</code></pre></div></div>
+</div>
+<p>The important parameters here are first the volumes mapping and environment variables. It is important to keep it consistent across all the different applications of this stack. <code>/config</code> is where all the persistent configuration data will be stored and <code>/media</code> is where our media libraries are. <code>PUID</code> and <code>GUID</code> are determining the user and group for the container, it is important to keep the same value across all containers so that we do not create permission conflicts.</p>
+<div class="code_switcher_container_parent 43a38900-9fde-4e94-b0ff-f16b55596cdf"><div class="code_switcher_code_action_container"><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># tree structure of /mnt</span>
+/mnt
+└── data                       &lt;- <span class="k">${</span><span class="nv">DATA</span><span class="k">}</span>
+    │
+    ├── downloads              &lt;- <span class="k">${</span><span class="nv">DOWNLOADS</span><span class="k">}</span>
+    ├── media                  &lt;- <span class="k">${</span><span class="nv">MEDIA</span><span class="k">}</span>
+    │   ├── calibre-library
+    │   ├── movies
+    │   └── tv
+</code></pre></div></div>
+</div>
+<p>Here is a image of the tree structure of <code>/mnt/data</code> drive where I store all my media. As some applications will need to hardlink, create and delete files across those folders, it is important to make sure that:</p>
+<ul>
+<li>PUID/GUID can read and write on this directory and subdirectories.</li>
+<li>all volumes are mapped as indicated in this page for each container.</li>
+</ul>
+<h3 id="radaar">Radaar</h3>
+<p><a href="https://radarr.video/">Radarr</a>, will manage and download movie, with the help of jackett and transmission.</p>
+<div class="code_switcher_container_parent 64f2fdbe-824a-474c-9709-66ae6b8e31ab"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('64f2fdbe-824a-474c-9709-66ae6b8e31ab')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># movie library</span>
+  <span class="na">radaar</span><span class="pi">:</span>
+    <span class="c1"># https://hub.docker.com/r/linuxserver/radarr</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">lscr.io/linuxserver/radarr</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">radarr</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">radarr</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/radarr:/config</span>
+      <span class="pi">-</span> <span class="s">${DATA}:/data</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">PUID=${PUID}</span>
+      <span class="pi">-</span> <span class="s">PGID=${PGID}</span>
+      <span class="pi">-</span> <span class="s">TZ=${TZ}</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">7878:7878</span> <span class="c1"># webUI at localhost:7878</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">jackett</span>
+      <span class="pi">-</span> <span class="s">transmission</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+</code></pre></div></div>
+</div>
+<p>Here we indicate that radarr should be started only after jackett and transmission as it uses them. We also map the default port for the UI of radarr.
+Notice that we map <code>/data</code> and not only <code>/media</code> or <code>/movies</code> as Radarr needs to see the download directory as well.</p>
+<h3 id="sonaar">Sonaar</h3>
+<p><a href="https://sonarr.tv/">Sonarr</a>, does the same as Radarr but for TV shows and anime.</p>
+<div class="code_switcher_container_parent a8d693c1-40fa-4fec-9a0b-5a74e9f1a8fc"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('a8d693c1-40fa-4fec-9a0b-5a74e9f1a8fc')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># TV show library</span>
+  <span class="na">sonarr</span><span class="pi">:</span>
+    <span class="c1"># https://hub.docker.com/r/linuxserver/sonarr</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">lscr.io/linuxserver/sonarr</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">sonarr</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/sonarr:/config</span>
+      <span class="pi">-</span> <span class="s">${DATA}:/data</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">PUID=${PUID}</span>
+      <span class="pi">-</span> <span class="s">PGID=${PGID}</span>
+      <span class="pi">-</span> <span class="s">TZ=${TZ}</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">8989:8989</span> <span class="c1"># webUI at localhost:8989</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">jackett</span>
+      <span class="pi">-</span> <span class="s">transmission</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+
+</code></pre></div></div>
+</div>
+<p>Basically the same configuration as Radarr.</p>
+<h3 id="jackett">Jackett</h3>
+<p><a href="https://github.com/Jackett/Jackett">Jackett</a>, translate queries from radarr and sonarr to torrent trackers to use in transmission.</p>
+<div class="code_switcher_container_parent af41f431-fcbf-4a61-ad86-5dd3a85150f2"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('af41f431-fcbf-4a61-ad86-5dd3a85150f2')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># torrent tracker search</span>
+  <span class="na">jackett</span><span class="pi">:</span>
+    <span class="c1"># https://hub.docker.com/r/linuxserver/jackett</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">lscr.io/linuxserver/jackett</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">jackett</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/jackett:/config</span>
+      <span class="pi">-</span> <span class="s">${DOWNLOADS}:/downloads</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">PUID=${PUID}</span>
+      <span class="pi">-</span> <span class="s">PGID=${PGID}</span>
+      <span class="pi">-</span> <span class="s">TZ=${TZ}</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">9117:9117</span> <span class="c1"># webUI at localhost:9117</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+
+</code></pre></div></div>
+</div>
+<p>Nothing new under the sun.</p>
+<h3 id="calibre">Calibre</h3>
+<p><a href="https://calibre-ebook.com/">Calibre</a> is the reference for e-book and comics management.</p>
+<div class="code_switcher_container_parent ef3869f4-c5f7-4f79-878a-8fc6cc39576f"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('ef3869f4-c5f7-4f79-878a-8fc6cc39576f')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># ebooks library manager and server (include webserver)</span>
+  <span class="na">calibre</span><span class="pi">:</span>
+    <span class="c1"># https://hub.docker.com/r/linuxserver/calibre</span>
+    <span class="c1"># for some reason, putting lscr.io before image</span>
+    <span class="c1"># generates an error later...</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">linuxserver/calibre:arm64v8-arch</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">calibre</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/calibre:/config</span>
+      <span class="pi">-</span> <span class="s">${DATA}:/data</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">PUID=${PUID}</span>
+      <span class="pi">-</span> <span class="s">PGID=${PGID}</span>
+      <span class="pi">-</span> <span class="s">TZ=${TZ}</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">8080:8080/tcp</span> <span class="c1"># Calibre desktop gui.</span>
+      <span class="pi">-</span> <span class="s">8081:8081/tcp</span> <span class="c1"># Calibre webserver gui.</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+</code></pre></div></div>
+</div>
+<p>Once again, quite similar as before. Raspberry Pi needs an arm64 version for the containers, it is usually automatically fetched but I had to specify the architecture tag for this container.</p>
+<h3 id="transmission-openvpn">Transmission-openvpn</h3>
+<p>Here is the tricky part of this stack. This container make sure that all your torrents are downloaded via a VPN. This is for privacy reasons, if you do not care about that, or do not want to subscribe to a paying VPN, you can use the much simpler <a href="https://hub.docker.com/r/linuxserver/transmission">linuxserver image for transmission</a>. Personally, I use a VPN to access geography-locked content and services so I was already a subscriber.</p>
+<p>I will not go much into detail here, but follow scrupulously the config values. Please have a look at the <a href="https://github.com/AntoineGlacet/home-server/blob/master/.env.example"><code>.env</code></a> example file for reference.</p>
+<div class="code_switcher_container_parent 078862cd-d079-4cd3-9180-06d69945455d"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('078862cd-d079-4cd3-9180-06d69945455d')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># torrent client</span>
+  <span class="c1"># special image bundled with VPN</span>
+  <span class="na">transmission</span><span class="pi">:</span>
+    <span class="c1"># https://haugene.github.io/docker-transmission-openvpn/</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">haugene/transmission-openvpn</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">transmission</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./config/transmission:/config</span>
+      <span class="pi">-</span> <span class="s">${DATA}:/data</span>
+    <span class="na">environment</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">PUID=${PUID}</span>
+      <span class="pi">-</span> <span class="s">PGID=${PGID}</span>
+      <span class="pi">-</span> <span class="s">TZ=${TZ}</span>
+      <span class="c1"># VPN and networking https://haugene.github.io/docker-transmission-openvpn/provider-specific/</span>
+      <span class="pi">-</span> <span class="s">CREATE_TUN_DEVICE=true</span>
+      <span class="pi">-</span> <span class="s">OPENVPN_PROVIDER=NORDVPN</span>
+      <span class="pi">-</span> <span class="s">NORDVPN_COUNTRY=${NORDVPN_COUNTRY}</span>
+      <span class="pi">-</span> <span class="s">NORDVPN_CATEGORY=${NORDVPN_CATEGORY}</span>
+      <span class="pi">-</span> <span class="s">NORDVPN_PROTOCOL=tcp</span>
+      <span class="pi">-</span> <span class="s">OPENVPN_USERNAME=${OPENVPN_USERNAME}</span>
+      <span class="pi">-</span> <span class="s">OPENVPN_PASSWORD=${OPENVPN_PASSWORD}</span>
+      <span class="pi">-</span> <span class="s">WEBPROXY_ENABLED=false</span>
+      <span class="pi">-</span> <span class="s">LOCAL_NETWORK=${LOCAL_NETWORK}</span>
+      <span class="pi">-</span> <span class="s">DISABLE_PORT_UPDATER=true</span>
+      <span class="c1"># Transmission config</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_HOME=/config</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_DOWNLOAD_DIR=/data/downloads</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_SEED_QUEUE_ENABLED=true</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_INCOMPLETE_DIR_ENABLED=false</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_DOWNLOAD_QUEUE_SIZE=30</span>
+      <span class="pi">-</span> <span class="s">TRANSMISSION_WEB_UI=combustion</span>
+    <span class="na">cap_add</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">NET_ADMIN</span>
+    <span class="na">logging</span><span class="pi">:</span>
+      <span class="na">driver</span><span class="pi">:</span> <span class="s">json-file</span>
+      <span class="na">options</span><span class="pi">:</span>
+        <span class="na">max-size</span><span class="pi">:</span> <span class="s">10m</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">9091:9091"</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+</code></pre></div></div>
+</div>
+<h2 id="access">Access</h2>
+<p>You can access all the WebUI from you local network from the ports listed in the <code>docker-compose.yml</code> and configure the apps from there. (eg. your-server-ip:9091 for transmission webUI) I may make another post for all the configuration tips and tricks for this stack and the best practices for managing libraries.</p>
+<p>Another interesting feature is remote access to your media server from outside your LAN. You can use reverse proxy and expose some ports to the internet to directly access your media server, but I chose to use VPN as my router has built-int open-vpn server (I have an Asus rt-ac68u).</p>]]></content><author><name>Antoine Glacet</name></author><category term="home server" /><category term="raspberry pi" /><category term="linux server" /><category term="docker" /><category term="ubuntu" /><category term="media" /><category term="tutorial" /><summary type="html"><![CDATA[How to set up a media server on Raspberry Pi with Docker (plex, radarr, sonarr, haugene/transmission-openvpn, calibre)]]></summary></entry><entry><title type="html">Mount a drive on Ubuntu</title><link href="https://blog.antoineglacet.com/tips/mount-drive-to-linux/" rel="alternate" type="text/html" title="Mount a drive on Ubuntu" /><published>2022-02-27T00:00:00+09:00</published><updated>2022-02-27T00:00:00+09:00</updated><id>https://blog.antoineglacet.com/tips/mount-drive-to-linux</id><content type="html" xml:base="https://blog.antoineglacet.com/tips/mount-drive-to-linux/"><![CDATA[<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+<p><img src="/assets/images/linux-mount-drive.png" alt="image-center" /></p>
+<h1 id="mount-a-drive-on-ubuntu">Mount a drive on Ubuntu</h1>
+<p>Mounting a drive on ubuntu is a rather simple procedure but some important parameters are often forgotten on the tutorials I found online when I first configured my Raspberry Pi as a media server running on docker containers.</p>
+<h2 id="find-your-drive-details">1. Find your drive details</h2>
+<p>Many guides online are not really clear on this part so I will try to give the information I wished I had when I started.</p>
+<div class="notice--info">
+<p>In linux, a <strong>disk</strong> is a physical storage and it can have one or more <strong>partitions</strong>, each formated with its own <strong>filesystem</strong> (eg. ext4, ntfs, vfat, …). In linux, every <strong>file</strong> and <strong>directory</strong> is under the root directory <code>/</code>. Partitions are mounted on directories, usually we mount external storage under <code>/mnt</code>.</p>
+</div>
+<p>To get a good understanding of that, running the command <code>lsblk</code> with optional columns can help (<code>lsblk --help</code> gets you a list of all available columns).</p>
+<ul class="code-tab-container 7756716b-88ac-4783-a7af-19f663e6f996"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', '7756716b-88ac-4783-a7af-19f663e6f996', 0)">command</a></li></ul><ul class="code-tab-switcher 7756716b-88ac-4783-a7af-19f663e6f996"><li class="code_switcher_container_parent active-tab code_switcher_sh b8c749b1-46f1-4615-8c07-ae93fd13bfaa"><div class="code_switcher_code_action_container"><div id="code_copied_snackbar">Copied!</div><button class="code_switcher_copy_button" title="Copy" onclick="copyText('b8c749b1-46f1-4615-8c07-ae93fd13bfaa')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lsblk <span class="nt">-o</span> NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,UUID,VENDOR,MODEL,LABEL
+</code></pre></div></div>
+</li></ul>
+<div></div>
+<ul class="code-tab-container 8d02a26a-a18f-4f83-8e2e-6d70329ffa40"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', '8d02a26a-a18f-4f83-8e2e-6d70329ffa40', 0)">result (scroll ==> to see details)</a></li></ul><ul class="code-tab-switcher 8d02a26a-a18f-4f83-8e2e-6d70329ffa40"><li class="code_switcher_container_parent active-tab code_switcher_sh c4040c75-bf23-4aad-b0c0-8ad4e67c519e"><div class="code_switcher_code_action_container"><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NAME     SIZE TYPE FSTYPE   MOUNTPOINT        UUID                                 VENDOR   MODEL                LABEL
+loop0     49M loop squashfs /snap/core18/2252
+loop1     49M loop squashfs /snap/core18/2289
+loop2   57.5M loop squashfs /snap/core20/1274
+loop3   57.5M loop squashfs /snap/core20/1332
+loop4   60.7M loop squashfs /snap/lxd/21804
+loop5   10.6M loop squashfs /snap/nmap/2504
+loop6   60.7M loop squashfs /snap/lxd/21843
+loop7   10.6M loop squashfs /snap/nmap/2534
+loop8   37.7M loop squashfs /snap/snapd/14982
+sda    223.6G disk                                                                 SABRENT  SSHD
+├─sda1   256M part vfat     /boot/firmware    5C4B-68A0                                                          system-boot
+└─sda2 223.3G part ext4     /                 34fa43d2-724c-4b32-81d5-123c567abc12                               writable
+sdb      3.7T disk                                                                 StoreJet WDC_WD40NPZZ-00PDPT0
+└─sdb1   3.7T part ntfs     /mnt/data         12A34B56C78D9123                                                   Transcend_4TB
+</code></pre></div></div>
+</li></ul>
+<p>You should be able to identify your drive easily and write down the FSTYPE and UUID. At this point your drive should not have a mountpoint.</p>
+<p>We will use UUID instead of NAME of the partition as the UUID will stay the same between boots or if you use a different usb port.</p>
+<h2 id="configure-mount-at-boot">2. Configure mount at boot</h2>
+<p>Linux uses /etc/fstab (file system table) to determine what and how partitions should be mounted at boot time. We will edit this file to configure our mount.</p>
+<div class="code_switcher_container_parent 4ceb0406-822c-41b4-a1d5-2af92a559cba"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('4ceb0406-822c-41b4-a1d5-2af92a559cba')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nano /etc/fstab
+</code></pre></div></div>
+</div>
+<div></div>
+<p>add this line at the end of the file (change UUID, File System Type according to previous part).</p>
+<div class="code_switcher_container_parent 2802eda3-2712-4c42-9176-db4c9bdefcd3"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('2802eda3-2712-4c42-9176-db4c9bdefcd3')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># /etc/fstab</span>
+<span class="c"># [Device] [Mount Point] [File System Type] [Options] [Dump] [Pass]</span>
+<span class="nv">UUID</span><span class="o">=</span>12A34B56C78D9123 /mnt/data ntfs <span class="nv">uid</span><span class="o">=</span>1000,gid<span class="o">=</span>1000,nosuid,nodev,nofail 0 0
+</code></pre></div></div>
+</div>
+<p>Then write out with <code>ctrl+o</code> and validate with <code>enter</code> and exit with <code>ctrl+x</code>.
+If you want more details about what we wrote up there, expand this next section.</p>
+<h3 id="fstab-and-mount-options">3.2 fstab and mount options</h3>
+<details>
+  <summary markdown="1"> Expand section </summary>
+<p>You can find info on the fields with <code>man fstab</code> and <code>man mount</code>, but here is a summary.</p>
+<table>
+<thead>
+<tr>
+<th>item</th>
+<th>value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[Device]</td>
+<td>UUID=</td>
+<td>Universally Unique Identifier for the partition to be mounted</td>
+</tr>
+<tr>
+<td>[Mount Point]</td>
+<td>/mnt/data</td>
+<td>Where the partition will be accessible from in the linux file system tree</td>
+</tr>
+<tr>
+<td>[File System Type]</td>
+<td>ntfs</td>
+<td>The data structure of the partition we mount</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>uid=</td>
+<td>userid for the mount</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>gid=</td>
+<td>groupid for the mount</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>nosuid</td>
+<td>For security, prevents files on mount to set userid</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>nodev</td>
+<td>For security, prevents system from interpreting character or block special devices</td>
+</tr>
+<tr>
+<td>[Options]</td>
+<td>nofail</td>
+<td>allows boot to continue if mount fails</td>
+</tr>
+<tr>
+<td>[Dump]</td>
+<td>0</td>
+<td>set to 1 do dump filesystem</td>
+</tr>
+<tr>
+<td>[Pass]</td>
+<td>0</td>
+<td>set to 1 if root filesystem</td>
+</tr>
+</tbody>
+</table>
+<p>The user and group parameters (uid and gid) are very important. When we want to manage access to this directory from docker containers or samba user later on so we will check that it works later on.</p>
+</details>
+<h2 id="mount-and-verify">3. Mount and verify</h2>
+<p>You can now enter <code>mount -a</code> in the terminal, it looks through /etc/fstab and mount all the devices as described there.
+Now that the mount is done, let’s check it is there and ownership is set correctly.</p>
+<ul class="code-tab-container bbdee65b-427c-4888-ae84-21dbd275f088"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', 'bbdee65b-427c-4888-ae84-21dbd275f088', 0)">command</a></li></ul><ul class="code-tab-switcher bbdee65b-427c-4888-ae84-21dbd275f088"><li class="code_switcher_container_parent active-tab code_switcher_sh 776daf69-6089-48c3-9d5a-7749a9d92e82"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('776daf69-6089-48c3-9d5a-7749a9d92e82')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /mnt
+<span class="nb">ls</span> <span class="nt">-l</span>
+</code></pre></div></div>
+</li></ul>
+<p>Confirm that you see your userid and groupid for the mounted directory</p>
+<div class="notice--info">
+<p><strong>tip:</strong> Should you have any trouble following this guide, have a look at the detailed <a href="https://man7.org/linux/man-pages/man8/mount.8.html">linux manual section on mount</a>, also accessible from terminal with command <code>man mount</code>.</p>
+</div>]]></content><author><name>Antoine Glacet</name></author><category term="tips" /><category term="raspberry pi" /><category term="linux server" /><category term="ubuntu" /><category term="media" /><category term="tutorial" /><summary type="html"><![CDATA[The good way to mount a drive on a linux server. Perfect for Raspberry Pi ubuntu server.]]></summary></entry><entry><title type="html">WSL2+Windows Terminal+VScode</title><link href="https://blog.antoineglacet.com/productivity/wsl2-terninal-vscode/" rel="alternate" type="text/html" title="WSL2+Windows Terminal+VScode" /><published>2022-02-21T00:00:00+09:00</published><updated>2022-02-21T00:00:00+09:00</updated><id>https://blog.antoineglacet.com/productivity/wsl2-terninal-vscode</id><content type="html" xml:base="https://blog.antoineglacet.com/productivity/wsl2-terninal-vscode/"><![CDATA[<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+<p><img src="/assets/images/wsl-terminal-vscode.png" alt="image-center" /></p>
+<h1 id="windows-coding-environment">Windows coding environment</h1>
+<div class="notice--info">
+<p><strong>Foreword:</strong> Windows is king at work and in gamers’ homes, and now it comes with everything you need to code and use linux seamlessly. It is so simple to set up and use that Windows might have actually become linux’s best friend!</p>
+</div>
+<p>There is no way around it, linux is a must to be able to code and geek. The best coding environment on Windows is just to use linux on Windows, without all the hassle and complexity it used to be.</p>
+<p>The core of the environment is WSL - Windows Subsystem for Linux, which runs linux on Windows. To interact with WSL, Windows Terminal and VScode, respectively a terminal and an IDE (Integrated Development Environment) are both free, open source and integrate very well with WSL. Oh, and they are also top of the class in their respective category. I have yet to find something that these 3 softwares cannot achieve.</p>
+<div class="notice--warning">
+<p><strong>Notice:</strong> You must be running Windows 10 version 2004 and higher (Build 19041 and higher) or Windows 11.</p>
+</div>
+<h2 id="windows-terminal">Windows Terminal</h2>
+<p>Windows Terminal is a simple, customizable terminal that can be used with Powershell, WSL and any application with a command line interface. Basically, that’s where we type commands.</p>
+<p>Install Windows Terminal through Microsoft store following this <a href="https://aka.ms/terminal">link</a>.</p>
+<h2 id="wsl2">WSL2</h2>
+<p>WSL - Windows Subsystem for Linux, is a linux environment running natively on Windows. It will let you pick a linux distribution (distro), and run it without exiting your Windows session. From WSL, you will be able to do anything a linux system can do … and more! For example: you can access your Windows files from your WSL and vice-versa.</p>
+<h3 id="install">Install</h3>
+<p>It has never been that easy to install WSL! Just open a PowerShell prompt (in Windows Terminal!) and type the following.</p>
+<ul class="code-tab-container 4843c5f4-bb19-4e65-9cc6-1cbc0ca57d7e"><li class="active-tab code_switcher_powershell"><a onclick="selectTab('code_switcher_powershell', '4843c5f4-bb19-4e65-9cc6-1cbc0ca57d7e', 0)">PowerShell</a></li><li class=" code_switcher_powershell"><a onclick="selectTab('code_switcher_powershell', '4843c5f4-bb19-4e65-9cc6-1cbc0ca57d7e', 1)">Example</a></li></ul><ul class="code-tab-switcher 4843c5f4-bb19-4e65-9cc6-1cbc0ca57d7e"><li class="code_switcher_container_parent active-tab code_switcher_powershell ad503c62-2d41-4e19-97cc-ee01281eaa24"><div class="code_switcher_code_action_container"><div id="code_copied_snackbar">Copied!</div><button class="code_switcher_copy_button" title="Copy" onclick="copyText('ad503c62-2d41-4e19-97cc-ee01281eaa24')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># set default wsl version</span><span class="w">
+</span><span class="n">wsl</span><span class="w"> </span><span class="nt">--set-default-version</span><span class="w"> </span><span class="nx">2</span><span class="w">
+</span><span class="c"># check which distro you can install</span><span class="w">
+</span><span class="n">wsl</span><span class="w"> </span><span class="nt">--list</span><span class="w"> </span><span class="nt">--online</span><span class="w">
+</span><span class="c"># install your favorite distro</span><span class="w">
+</span><span class="n">wsl</span><span class="w"> </span><span class="nt">--install</span><span class="w"> </span><span class="nt">-d</span><span class="w"> </span><span class="err">&lt;</span><span class="nx">DistroName</span><span class="err">&gt;</span><span class="w"> 
+</span></code></pre></div></div>
+</li><li class="code_switcher_container_parent code_switcher_powershell 9578cf7a-4b9c-4847-bb0f-118d997b61ea"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('9578cf7a-4b9c-4847-bb0f-118d997b61ea')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wsl</span><span class="w"> </span><span class="nt">--install</span><span class="w"> </span><span class="nt">-d</span><span class="w"> </span><span class="nx">Ubuntu-20.04</span><span class="w">
+</span></code></pre></div></div>
+</li></ul>
+<p>After that, make sure you are running the version 2 of WSL by entering the command <code>wsl -l -v</code> (still in PowerShell). If you see version 1, upgrade to 2 with command <code>wsl --set-version &lt;distro name&gt; 2</code> (so, <code>wsl --set-version Ubuntu-20.04 2</code> in our example)</p>
+<h3 id="start-linux">Start linux</h3>
+<p>Start Windows Terminal and the new WSL distro will now be available. At first boot, you will be asked to create a username and password for it, it will be your default user for this distro and will be granted admin privileges, allowing to run <code>sudo</code> (Super User Do) administrative commands.</p>
+<h3 id="move-files-optional">Move files (Optional)</h3>
+<details>
+  <summary markdown="1"> Expand section </summary>
+<p>WSL file system is a .vhdx file that Windows will store on your C drive by default. If you want to move that somewhere else, what you need to do is actually export your distro somewhere and reimport it from there.</p>
+<ol>
+<li>confirm your username (the one you choose at <a href="#start-linux">first start</a> of your distro) by running command <code>whoami</code> in your distro</li>
+</ol>
+<blockquote>
+<p>From here, everything happens on PowerShell, replace Ubuntu-20.04 by your distro name (<code>wsl -l</code>)</p>
+</blockquote>
+<ol start="2">
+<li>export your distro (this takes time)</li>
+</ol>
+<div class="code_switcher_container_parent 817abe81-fa61-4f7f-b811-296357ba3f88"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('817abe81-fa61-4f7f-b811-296357ba3f88')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mkdir</span><span class="w"> </span><span class="nx">D:\temp</span><span class="w"> </span><span class="c"># we will delete this at the end</span><span class="w">
+</span><span class="n">wsl</span><span class="w"> </span><span class="nt">--export</span><span class="w"> </span><span class="nx">Ubuntu-20.04</span><span class="w"> </span><span class="nx">D:\WSL\Ubuntu-20.04.tar</span><span class="w">
+</span></code></pre></div></div>
+</div>
+<ol start="3">
+<li>
+<p>delete your existing distro with <code>wsl --unregister Ubuntu</code></p>
+</li>
+<li>
+<p>reimport your distro to the new location (this also takes time)</p>
+</li>
+</ol>
+<div class="code_switcher_container_parent 4f6f989b-aef6-456f-b0ea-c3280a1c4d14"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('4f6f989b-aef6-456f-b0ea-c3280a1c4d14')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mkdir</span><span class="w"> </span><span class="nx">D:\WSL</span><span class="w">
+</span><span class="n">wsl</span><span class="w"> </span><span class="nt">--import</span><span class="w"> </span><span class="nx">Ubuntu-20.04</span><span class="w"> </span><span class="nx">D:\WSL\</span><span class="w"> </span><span class="nx">D:\temp\Ubuntu-20.04.tar</span><span class="w">
+</span></code></pre></div></div>
+</div>
+<ol start="5">
+<li>switch default user to you</li>
+</ol>
+<div class="code_switcher_container_parent 1316e337-6380-4d25-9c73-e2b9696c321a"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('1316e337-6380-4d25-9c73-e2b9696c321a')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cd</span><span class="w"> </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERPROFILE</span><span class="nx">\AppData\Local\Microsoft\WindowsApps</span><span class="w">
+</span><span class="n">ubuntu</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="nt">--default-user</span><span class="w"> </span><span class="nx">your-username</span><span class="w">
+</span></code></pre></div></div>
+</div>
+<p>restart and it’s done!</p>
+</details>
+<h2 id="vscode">VScode</h2>
+<p>VScode is the free and open source code editor developed by Microsoft, it can handle any languages and have a huge array of extensions maintained by the open source community. It includes support for debugging, syntax highlighting, intelligent code completion, snippets, code refactoring, and embedded Git… and pretty much anything you would want in a code editor.</p>
+<p>Download and run <a href="https://go.microsoft.com/fwlink/?LinkID=534107">VS code installer</a>, choose to install for user, except if you want multiple users to have access to it.</p>
+<p>Once installed, have a look at the extensions menu and install <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl">Remote - WSL</a> to access WSL from VScode.</p>
+<h2 id="windows-insider-program-optional">Windows Insider Program (Optional)</h2>
+<details>
+  <summary markdown="1"> Expand section </summary>
+<p><img src="/assets/images/Windows_Insider_Ninjacat_Trex.jpg" alt="image-center" /></p>
+  <div class="notice--warning">
+<p><strong>Notice:</strong> This step is totally optional as it will have significant impact on your whole PC and not just your coding experience.</p>
+  </div>
+<p>Joining the Windows Insider Program lets you receive the new updates and features of Windows early, it is a really cool thing if you want to have the latest improvements for all the things described in this blog post. It also means that you will be bumped up to the latest build of Windows 11 automatically and some things might be a little more unstable there.</p>
+<p>Personally, I chose to join the Insider Program on their most advanced channel (dev) to receive the most up to date build of Windows. I honestly did not notice any bugs or instability and it has allowed me to use the latest improvements of WSL, like running GUI apps from WSL natively. This is so great that I would not go back.</p>
+<p>Once again, the choice is up to you, maybe something to consider at a later stage if you end up needing some unreleased features.</p>
+<p>For the registration process, you can refer to <a href="https://insider.windows.com/en-us/getting-started">MS official doc</a></p>
+</details>
+<h2 id="bonus-theme">Bonus: theme!</h2>
+<p><img src="https://draculatheme.com/static/img/screenshots/visual-studio-code.png" alt="image" /></p>
+<p>A cool theme is always nice set the mood. Both Windows Terminal and VScode are customizable so do not hesitate to play around with themes. Personally, I am using the <a href="https://draculatheme.com/">dracula theme</a>. I love it as it can be set for most the apps I use daily and I even got the matching keycap set!</p>
+<div class="notice--info">
+<p><strong>tip:</strong> Should you have any trouble following this guide, have a look at the detailed <a href="https://docs.microsoft.com/en-us/windows/terminal/install">Windows Terminal docs</a>, <a href="https://docs.microsoft.com/en-us/windows/wsl/install">WSL docs</a> and the <a href="https://code.visualstudio.com/docs/setup/windows">VScode docs</a>.</p>
+</div>]]></content><author><name>Antoine Glacet</name></author><category term="productivity" /><category term="linux" /><category term="tutorial" /><category term="coding" /><summary type="html"><![CDATA[Ultimate coding and geeking environment on Windows]]></summary></entry><entry><title type="html">Home server with Raspberry Pi</title><link href="https://blog.antoineglacet.com/home%20server/rpi-ubuntu-server/" rel="alternate" type="text/html" title="Home server with Raspberry Pi" /><published>2022-02-13T00:00:00+09:00</published><updated>2022-02-13T00:00:00+09:00</updated><id>https://blog.antoineglacet.com/home%20server/rpi-ubuntu-server</id><content type="html" xml:base="https://blog.antoineglacet.com/home%20server/rpi-ubuntu-server/"><![CDATA[<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono"/><link rel="stylesheet" href="/assets/codeblock.css"/><script src="/assets/codeblock.js"></script>
+<p><img src="/assets/images/rpi-ubuntu-ssd.png" alt="image-center" /></p>
+<h1 id="set-up-the-perfect-raspberry-pi-ubuntu-server">Set up the perfect Raspberry Pi Ubuntu server</h1>
+<div class="notice--info">
+<p><strong>Foreword</strong>: This  guide simply describes how to set up a performant and reliable Ubuntu server on a Raspberry Pi. For about 50-150 USD you will have a fully functioning server that can be used as a media server, smart home hub, ad blocker, retro gaming station, personal hosting platform, and a huge array of other applications! It will also be a perfect introduction in the fascinating world of open source, IT and DIY.</p>
+</div>
+<h2 id="hardware">Hardware</h2>
+<h3 id="why-a-rpi">Why a Rpi</h3>
+<p>You could run an ubuntu server from pretty much anything, and actually if you have an (relatively) old laptop laying around, it could be a great idea. However, here are a few reasons why a Rpi is a great option:</p>
+<ul>
+<li>affordability: relatively cheap</li>
+<li>low power consumption, footprint &amp; noise: as an always on device, it’s a plus</li>
+<li>large resource and tutorial: any issue you will face have been answered somewhere in the first few google search results</li>
+<li>GPIO pins: opens a wide range of applications (I used my Rpi to flash software in Zigbee devices)</li>
+<li>open source: embrace open source from the start!</li>
+</ul>
+<p>In fact, I started my home server on a Rpi4, thinking I might upgrade to something beefier someday… This was 2 years ago at the time of writing and this same Rpi still serves me daily!</p>
+<h3 id="hardware-list">Hardware list</h3>
+<p><strong>Core:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.amazon.com/gp/product/B07TKFFCF1/ref=as_li_tl?ie=UTF8&amp;tag=antoineglacet-20&amp;camp=1789&amp;creative=9325&amp;linkCode=as2&amp;creativeASIN=B07TKFFCF1&amp;linkId=3727b43939cd326556c1309040702ea1">Raspberry Pi</a></td>
+<td>Raspberry Pi 3 and 4 are fine depending on your budget.</td>
+<td>35-75$</td>
+</tr>
+<tr>
+<td>Compatible power supply</td>
+<td>Often sold with the Rpi. otherwise see recommendations.</td>
+<td>0-10$</td>
+</tr>
+<tr>
+<td>SD card</td>
+<td>To store the Raspberry Pi OS, not used after first boot if you do SSD mode (you should).</td>
+<td>10-30$</td>
+</tr>
+<tr>
+<td>A computer</td>
+<td>To setup the server. Any computer will do</td>
+<td>out of budget</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Optional:</strong> (recommended for performance and reliability)</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HDD</td>
+<td>to store large quantity of files and media</td>
+<td>50-70$</td>
+</tr>
+<tr>
+<td><a href="https://www.amazon.com/gp/product/B01N5IB20Q/ref=as_li_tl?ie=UTF8&amp;tag=antoineglacet-20&amp;camp=1789&amp;creative=9325&amp;linkCode=as2&amp;creativeASIN=B01N5IB20Q&amp;linkId=14dce372402111def65e1f1eb0eaa816">SSD</a> and <a href="https://www.amazon.com/gp/product/B00XLAZODE/ref=as_li_tl?ie=UTF8&amp;tag=antoineglacet-20&amp;camp=1789&amp;creative=9325&amp;linkCode=as2&amp;creativeASIN=B00XLAZODE&amp;linkId=68ecacf469a4133fe84854670b3785c3">USB adapter</a></td>
+<td>the SSD mode is really unleashing the full potential of Rpi as a server. <a href="#ssd-mod">see below</a></td>
+<td>30-40$</td>
+</tr>
+<tr>
+<td>powered USB hub</td>
+<td>required to supply extra power for SSD and HDD</td>
+<td>15-20$</td>
+</tr>
+<tr>
+<td>case + fan</td>
+<td>At this point, a case and a fan can be useful too</td>
+<td>10-20$</td>
+</tr>
+</tbody>
+</table>
+<p>Here is a list of everything you will need to run your ubuntu server with a Raspberry Pi. As we will run headless (= no Graphical User Interface), you do not need any HDMI cable for this guide.</p>
+<p>Before buying a SD card or a SSD disk, read on to the <a href="#ssd-mod">SSD mod</a> section.</p>
+<h3 id="assembly">Assembly</h3>
+<p><img src="/assets/images/raspberrypi-assembly.jpg" alt="image-center" /></p>
+<ol>
+<li>just plug everything in</li>
+<li>really, there’s not that much to it</li>
+</ol>
+<p>For the first set up, keep the Pi close to your PC. Later on, I have found that putting it close to the router, connected through ethernet was most comfortable for me.</p>
+<p>For Raspberry Pi 4, you will need a fan to prevent CPU throttling (slowing down) during intensive use. You do not need that much air flow to keep your CPU cool, however fan can be a bit noisy. As my Rpi is close to my TV, I wanted it to be silent. What I did is I bought a 12V fan, that I hooked up to the 5V GPIO pins of my RPi4: the fan runs slower and is practically silent.</p>
+<h3 id="ssd-mod">SSD mod</h3>
+<p>SD cards are not a good solution to run an OS from: they easily get corrupted and have a slower read and write speed compared to a SSD disk. I suggest to start with a SD card you have laying around somewhere (from a camera or an old phone maybe). It will allow you to test things out and you can do the SSD mod after, at which point your Raspberry Pi will boot directly from SSD and will not need this SD card anymore.</p>
+<div class="notice--danger">
+<p><strong>Warning</strong>: Compatibility can be tricky for SSD boot. If you go with the recommended links in the hardware list above, it will work fine. If you use other brands and models, please cheack compatibility against the list in this <a href="https://jamesachambers.com/new-raspberry-pi-4-bootloader-usb-network-boot-guide/">post</a></p>
+</div>
+<h2 id="software">Software</h2>
+<h3 id="write-os-image-to-the-sd-card">Write OS image to the SD card</h3>
+<div class=text-center>
+<p><img src="/assets/images/raspberrypi-SD-write.gif" alt="image-center" /></p>
+</div>
+<p>Write the SD card with <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> (Windows, Linux and macOS).</p>
+<ol>
+<li>Connect the SD card to PC (through built-in/USB reader), and format it</li>
+<li>Open Raspberry Pi Imager and click “choose OS” =&gt; “other general purpose OS” =&gt; Ubuntu Server 20.04.3 (or higher) LTS 64 bit</li>
+<li>Choose SD card (if SD card is not recognized)</li>
+<li>Click on advanced options and fill in the following options:
+<ul>
+<li>hostname: raspberrypi</li>
+<li>enable SSH - use password authentification</li>
+<li>set username and password (write it down)</li>
+<li>configure wifi (input SSID and password)</li>
+<li>for good measure, set locale settings</li>
+</ul>
+</li>
+<li>Click “write” and that’s it!</li>
+</ol>
+<h3 id="first-boot">First boot</h3>
+<p>For the first boot, do not plug anything else than the Rpi with its power supply and SD card. Eventually, you can plug an ethernet cable but if you have set up wifi at the previous step, it is unecessary.</p>
+<div class="notice--danger">
+<p><strong>Warning</strong>: During your first boot a tool called <a href="https://cloud-init.io/?_ga=2.64849775.1748684259.1645015163-866807930.1645015163">cloud-init</a> is doing configuration. Give it a few minutes before going trying to connect to your Rpi.</p>
+</div>
+<h4 id="find-out-the-rpi-ip-address">Find out the Rpi ip address</h4>
+<p>There are a lot of ways to find the ip from your Rpi. But let’s review the 2 simplest ways:</p>
+<ul>
+<li>connect to your router (you will need to access it anyway to set up a static adress and/or expose some ports once you start using your Rpi more)</li>
+<li>use the following command:</li>
+</ul>
+<ul class="code-tab-container ebb5b897-4ce0-49dd-9fa8-db47c56633de"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', 'ebb5b897-4ce0-49dd-9fa8-db47c56633de', 0)">Linux/macOS</a></li><li class=" code_switcher_powershell"><a onclick="selectTab('code_switcher_powershell', 'ebb5b897-4ce0-49dd-9fa8-db47c56633de', 1)">Windows</a></li></ul><ul class="code-tab-switcher ebb5b897-4ce0-49dd-9fa8-db47c56633de"><li class="code_switcher_container_parent active-tab code_switcher_sh a61a1e6c-f5b5-48cb-aa98-4b9b7c52897f"><div class="code_switcher_code_action_container"><div id="code_copied_snackbar">Copied!</div><button class="code_switcher_copy_button" title="Copy" onclick="copyText('a61a1e6c-f5b5-48cb-aa98-4b9b7c52897f')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>arp <span class="nt">-na</span> | <span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"b8:27:eb"</span>
+<span class="c"># if first line do not work (for recent models of Rpi4)</span>
+arp <span class="nt">-na</span> | <span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"dc:a6:32"</span> 
+</code></pre></div></div>
+</li><li class="code_switcher_container_parent code_switcher_powershell 5ee73997-b47b-4961-8286-372635bde6bd"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('5ee73997-b47b-4961-8286-372635bde6bd')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">arp</span><span class="w"> </span><span class="nt">-a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">findstr</span><span class="w"> </span><span class="nx">b8-27-eb</span><span class="w">
+</span><span class="c"># if first line do not work (for recent models of Rpi4)</span><span class="w">
+</span><span class="n">arp</span><span class="w"> </span><span class="nt">-a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">findstr</span><span class="w"> </span><span class="nx">dc-a6-32</span><span class="w">  
+</span></code></pre></div></div>
+</li></ul>
+<p>Your Raspberry Pi ip might change after reboot because your router assign ip adresses dynamically by default on your home network. I recommend switching to static IP later.</p>
+<h4 id="connect-with-ssh">Connect with ssh</h4>
+<p>let’s connect to our instance with SSH. If you are using an older version of Windows, and did not join the cool kid gang using WSL, you will need an extra step here: to install Putty.</p>
+<p>It is a good moment to remind you that exploring the world of open source and general geeking will be a far more pleasant experience from a Linux environment, and WSL is the painless way to access the full potential of Linux from the comfort from Windows</p>
+<ul class="code-tab-container 0a50dc00-20d8-4f09-908b-8b69e9b6ab77"><li class="active-tab code_switcher_sh"><a onclick="selectTab('code_switcher_sh', '0a50dc00-20d8-4f09-908b-8b69e9b6ab77', 0)">Linux/macOS</a></li><li class=" code_switcher_powershell"><a onclick="selectTab('code_switcher_powershell', '0a50dc00-20d8-4f09-908b-8b69e9b6ab77', 1)">Windows>=10</a></li><li class=" code_switcher_md"><a onclick="selectTab('code_switcher_md', '0a50dc00-20d8-4f09-908b-8b69e9b6ab77', 2)">Windows<10</a></li></ul><ul class="code-tab-switcher 0a50dc00-20d8-4f09-908b-8b69e9b6ab77"><li class="code_switcher_container_parent active-tab code_switcher_sh 9183a8f3-fb6e-48a0-ac1b-4c83f5c7bf9c"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('9183a8f3-fb6e-48a0-ac1b-4c83f5c7bf9c')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># eg.: ssh rpi@192.168.1.85</span>
+ssh user@ip
+</code></pre></div></div>
+</li><li class="code_switcher_container_parent code_switcher_powershell a7b1fdc3-e6db-4b96-ac27-b789576559f4"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('a7b1fdc3-e6db-4b96-ac27-b789576559f4')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># eg.: ssh rpi@192.168.1.85</span><span class="w">
+</span><span class="n">ssh</span><span class="w"> </span><span class="nx">user</span><span class="err">@</span><span class="nx">ip</span><span class="w">
+</span></code></pre></div></div>
+</li><li class="code_switcher_container_parent code_switcher_md 7efb186f-544a-49b4-aebe-63afa8288390"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('7efb186f-544a-49b4-aebe-63afa8288390')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-md highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># use Putty! :(</span>
+</code></pre></div></div>
+</li></ul>
+<p>Now that we are logged in our server, the first thing to do is to update.</p>
+<div class="code_switcher_container_parent cca7cce9-ec19-4a70-b7a1-f7443fac6196"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('cca7cce9-ec19-4a70-b7a1-f7443fac6196')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt upgrade
+</code></pre></div></div>
+</div>
+<p>And voila! You are ready to enjoy your fully functional server.</p>
+<p>If you want your Rpi to be much faster, keep reading!</p>
+<h3 id="boot-from-ssd">Boot from SSD</h3>
+<h4 id="write-os-image-to-ssd">Write OS image to SSD</h4>
+<p>Repeat the steps of <a href="#write-os-image-to-the-sd-card">Write OS image to the SD card</a> but write on your SSD instead of SD card</p>
+<h4 id="enable-boot-from-usb-mass-storage">Enable boot from USB mass storage</h4>
+<h5 id="for-raspberry-pi-4-amp-b">For Raspberry Pi 4 &amp; B+</h5>
+<p>For most Raspberry 4 &amp; B+, this is enabled by default so go ahead and try it: remove the SD card, plug in SSD and power up. If it succeeds, you are done, congrats!</p>
+<p>If it did not, you simply need to first boot from a SD card written with an image that enables USB mass storage boot. Simply use the RPi imager again. When selecting the OS do:</p>
+<p>Choose OS =&gt; Misc utility images =&gt; Bootloader =&gt; USB Boot</p>
+<p>Boot up once with this SD card, then shut down the Rpi and boot from SSD!</p>
+<h5 id="for-other-raspberry-pi">For other Raspberry Pi</h5>
+<p>For older Rpi (2B, 3A+, 3B), it is slightly more complicated: we will need to use Rasbian from a SD card to enable USB boot.</p>
+<ul>
+<li>
+<p>First, write raspbian to a SD card following the steps of <a href="#write-os-image-to-the-sd-card">Write OS image to the SD card</a>.</p>
+</li>
+<li>
+<p>Boot from that image, ssh to your Rpi and execute the following command</p>
+</li>
+</ul>
+<div class="code_switcher_container_parent 2997742a-6d13-42be-971f-f7d852ef64dc"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('2997742a-6d13-42be-971f-f7d852ef64dc')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># update the packages</span>
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt upgrade
+<span class="c"># enable boot from USB</span>
+<span class="nb">echo </span><span class="nv">program_usb_boot_mode</span><span class="o">=</span>1 | <span class="nb">sudo tee</span> <span class="nt">-a</span> /boot/config.txt
+<span class="c"># reboot</span>
+<span class="nb">sudo </span>reboot
+</code></pre></div></div>
+</div>
+<ul>
+<li>wait for the Rpi to restart and do:</li>
+</ul>
+<div class="code_switcher_container_parent b007d692-1b4e-41ff-b616-84e98f723bf0"><div class="code_switcher_code_action_container"><button class="code_switcher_copy_button" title="Copy" onclick="copyText('b007d692-1b4e-41ff-b616-84e98f723bf0')"></button><button class="code_switcher_theme_button" onclick="updateTheme(true)"></button></div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vcgencmd otp_dump | <span class="nb">grep </span>17
+</code></pre></div></div>
+</div>
+<p>if output includes 3020000a, you won!</p>
+<ul>
+<li>you remove SD card and boot from SSD</li>
+</ul>
+<div class="notice--warning">
+<p><strong>warning:</strong> When booting up a Rpi which is connected to a powered USB hub, the Rpi can decide to draw power from USB. To avoid that, wait 2 or 3 seconds before plugging the USB hub after powering up the Rpi.</p>
+<p>Some USB adapter, although compatible can cause boot to take much longer. After boot everything will work fine.</p>
+<p>If you cannot see your Rpi connect to your network  after booting from SSD, wait about 10 minutes before trying again. Also, the ip might have changed. In that case, refer to <a href="#find-out-the-rpi-ip-address">Find out the Rpi ip address</a></p>
+</div>
+<h2 id="conclusion">Conclusion</h2>
+<p>Here you are, you have a fully functional and performant Ubuntu server! In another post, I want to write about how I use mine to run some docker containers for media server and smart home hub!</p>
+<div class="notice--info">
+<p><strong>tip:</strong> Should you have any trouble following this guide, have a look at the detailed <a href="https://www.raspberrypi.com/documentation/computers/getting-started.html">Raspberry Pi official documentation</a> and the <a href="https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview">ubuntu Rpi tutorial</a>.</p>
+</div>]]></content><author><name>Antoine Glacet</name></author><category term="home server" /><category term="raspberry pi" /><category term="linux server" /><category term="ubuntu" /><category term="media" /><category term="tutorial" /><summary type="html"><![CDATA[Tutorial to set up an ubuntu server on RPi. SSD mod included!]]></summary></entry></feed>

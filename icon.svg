@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="12.9mm"
+   height="12.9mm"
+   viewBox="0 0 12.9 12.9"
+   version="1.1"
+   id="svg23454"
+   inkscape:version="1.1.1 (3bf5ae0, 2021-09-20)"
+   sodipodi:docname="ag-icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview23456"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="13.645661"
+     inkscape:cx="32.6111"
+     inkscape:cy="26.711788"
+     inkscape:window-width="1607"
+     inkscape:window-height="1085"
+     inkscape:window-x="26"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs23451">
+    <rect
+       x="226.62553"
+       y="488.61108"
+       width="47.575291"
+       height="47.253838"
+       id="rect13790" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-111.94175,-126.91083)">
+    <rect
+       style="font-variation-settings:'wght' 700;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.0498821;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect22312"
+       width="12.850118"
+       height="12.850118"
+       x="111.96669"
+       y="126.93577"
+       rx="2.4664962"
+       ry="2.4664962" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,52.386116,-3.4835478)"
+       id="text13788"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:39.9999px;line-height:1.25;font-family:'Cascadia Code';-inkscape-font-specification:'Cascadia Code, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;white-space:pre;shape-inside:url(#rect13790);fill:#ffffff;fill-opacity:1;stroke:none"><tspan
+         x="226.625"
+         y="525.54401"
+         id="tspan837">a</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'Cascadia Code';-inkscape-font-specification:'Cascadia Code, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="117.89608"
+       y="135.40854"
+       id="text18316"><tspan
+         sodipodi:role="line"
+         id="tspan18314"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;font-family:'Cascadia Code';-inkscape-font-specification:'Cascadia Code, @wght=700';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;font-variation-settings:'wght' 700;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+         x="117.89608"
+         y="135.40854">g</tspan></text>
+  </g>
+</svg>
